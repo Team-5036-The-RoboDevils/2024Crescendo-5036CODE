@@ -1,5 +1,6 @@
 package frc.robot.hardware;
 
+import frc.robot.RobotMap;
 import edu.wpi.first.wpilibj.SPI;
 
 import com.kauailabs.navx.frc.AHRS;
@@ -7,6 +8,7 @@ import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.SPI;
+
 
 public class DrivetrainHardware implements IDrivetrainHardware {
     private CANSparkMax left1;
@@ -18,10 +20,10 @@ public class DrivetrainHardware implements IDrivetrainHardware {
     private AHRS gyro;
 
     public DrivetrainHardware() {
-        left1 = new CANSparkMax(3, MotorType.kBrushless); // Fix Device ID's once back in shop
-        left2 = new CANSparkMax(4, MotorType.kBrushless); // Fix Device ID's once back in shop
-        right1 = new CANSparkMax(1, MotorType.kBrushless); // Fix Device ID's once back in shop
-        right2 = new CANSparkMax(2, MotorType.kBrushless); // Fix Device ID's once back in shop
+        left1 = new CANSparkMax(RobotMap.l1CanID, MotorType.kBrushless);
+        left2 = new CANSparkMax(RobotMap.l2CanID, MotorType.kBrushless);
+        right1 = new CANSparkMax(RobotMap.r1CanID, MotorType.kBrushless);
+        right2 = new CANSparkMax(RobotMap.r2CanID, MotorType.kBrushless);
         leftEncoder = left1.getEncoder();
         rightEncoder = right2.getEncoder();
         gyro = new AHRS(SPI.Port.kMXP);
