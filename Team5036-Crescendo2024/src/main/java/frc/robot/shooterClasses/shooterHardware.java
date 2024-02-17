@@ -1,3 +1,4 @@
+package frc.robot.shooterClasses;
 
 //Lets have 2 different classes
 /*Start with ShooterHardware
@@ -19,13 +20,13 @@ import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 import edu.wpi.first.wpilibj.SPI;
 
-public class shooterHardware implements IShooterHardware {
+public class ShooterHardware implements IShooterHardware {
     private CANSparkMax shooter1;
     private CANSparkMax shooter2;
 
-    public shooterHardware() {
-        shooter1 = new CANSparkMax(2, MotorType.kBrushless);
-        shooter2 = new CANSparkMax(3, MotorType.kBrushless);
+    public ShooterHardware() {
+        shooter1 = new CANSparkMax(RobotMap.SHOOTER_S1_CAN_ID, MotorType.kBrushless);
+        shooter2 = new CANSparkMax(RobotMap.SHOOTER_S2_CAN_ID, MotorType.kBrushless);
     }
 
     // CAN ID values will be stored in RobotMap.java but for now, just random till
@@ -34,13 +35,13 @@ public class shooterHardware implements IShooterHardware {
     @Override
     public void setFrontMotorPower(double val) {
         shooter1.set(val); // can be +/- need to check in person
-        System.out.println("What is the motor power value ?  It's" + val);
+        System.out.println("DEBUG - FRONT MOTOR POWER " + val);
     }
 
     @Override
     public void setBackMotorPower(double val) {
         shooter2.set(val); // can be +/- need to check in person
-        System.out.println(val);
+        System.out.println("DEBUG - BACK MOTOR POWER " + val);
     }
 
     @Override

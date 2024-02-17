@@ -1,3 +1,4 @@
+package frc.robot.shooterClasses;
 
 /*public class Shooter {
 
@@ -13,12 +14,18 @@
 
 }*/
 public class Shooter {
-    private IShooterHardware hardware; 
+    private IShooterHardware hardware;
 
     public Shooter(IShooterHardware hardware) {
-
+        this.hardware = hardware;
     }
 
+    public void runOpenLoopFront(double val) {
+        hardware.setFrontMotorPower(val);
+    }
 
-    
+    public void runOpenLoopBack(double val) {
+        hardware.setBackMotorPower(val);
+    }
+
 }

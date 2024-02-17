@@ -1,3 +1,4 @@
+package frc.robot.shooterClasses;
 /*Lets have 2 different classes
 Start with ShooterHardware
 Similar to drivetrain hardware
@@ -26,7 +27,7 @@ public interface IShooterHardware {
 
     // heyyyyyyy :) the smiley face looks so derpy lmaoo
     // alright well, did he say which to do first?
-    // hello?
+    // he
     // check shooterhardware i tried smth :sob:
     // he said to do this one first and create a concrete class to run it see above
     // alright sounds good

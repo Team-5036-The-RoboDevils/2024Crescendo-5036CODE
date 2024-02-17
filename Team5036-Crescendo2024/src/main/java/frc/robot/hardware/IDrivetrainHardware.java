@@ -1,4 +1,5 @@
 package frc.robot.hardware;
+
 public interface IDrivetrainHardware {
     public void setLeftSidePower(double val);
 
@@ -14,5 +15,4 @@ public interface IDrivetrainHardware {
 
     public double getAngle();
 
-    
 }

@@ -8,6 +8,11 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
+import frc.robot.hardware.*;
+import frc.robot.oi.*;
+import frc.robot.shooterClasses.*;
+import frc.robot.subsystems.*;
+
 /**
  * The VM is configured to automatically run this class, and to call the
  * functions corresponding to
@@ -18,10 +23,10 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * project.
  */
 public class Robot extends TimedRobot {
-  private static final String kDefaultAuto = "Default";
-  private static final String kCustomAuto = "My Auto";
-  private String m_autoSelected;
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
+  OperatorInterface oi;
+  Drivetrain drivetrain;
+  AmpScorer ampScorer;
+  Shooter shooter;
 
   /**
    * This function is run when the robot is first started up and should be used
@@ -30,9 +35,11 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
-    SmartDashboard.putData("Auto choices", m_chooser);
+
+    oi = new OperatorInterface();
+    drivetrain = new Drivetrain(new DrivetrainHardware());
+    ampScorer = new AmpScorer(new AmpScorerHardware());
+    shooter = new Shooter(new ShooterHardware());
   }
 
   /**
@@ -47,6 +54,15 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+
+    double forward = oi.getDriveTrainForward();
+    double rotate = oi.getDriveTrainRotate();
+    double shooterOpenLoop = oi.getOpenLoopShooter();
+
+    SmartDashboard.putNumber("Drivetrain Controller Forward", oi.getDriveTrainForward());
+    SmartDashboard.putNumber("Drivetrain Controller Rotate", oi.getDriveTrainRotate());
+    SmartDashboard.putNumber("Operator Controller Shooter Open Loop", oi.getOpenLoopShooter());
+
   }
 
   /**
@@ -68,23 +84,13 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_autoSelected = m_chooser.getSelected();
-    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
-    System.out.println("Auto selected: " + m_autoSelected);
+
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    switch (m_autoSelected) {
-      case kCustomAuto:
-        // Put custom auto code here
-        break;
-      case kDefaultAuto:
-      default:
-        // Put default auto code here
-        break;
-    }
+
   }
 
   /** This function is called once when teleop is enabled. */
@@ -95,6 +101,12 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+    double forward = oi.getDriveTrainForward();
+    double rotate = oi.getDriveTrainRotate();
+    double shooterOpenLoop = oi.getOpenLoopShooter();
+    drivetrain.arcadeDrive(forward, rotate);
+    shooter.runOpenLoopFront(shooterOpenLoop);
+    shooter.runOpenLoopBack(shooterOpenLoop);
   }
 
   /** This function is called once when the robot is disabled. */
