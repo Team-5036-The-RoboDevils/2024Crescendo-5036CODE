@@ -1,4 +1,4 @@
-package frc.robot.shooterClasses;
+package frc.robot.hardware;
 
 //Lets have 2 different classes
 /*Start with ShooterHardware
@@ -23,10 +23,15 @@ import edu.wpi.first.wpilibj.SPI;
 public class ShooterHardware implements IShooterHardware {
     private CANSparkMax shooter1;
     private CANSparkMax shooter2;
+    private RelativeEncoder encoder1;
+    private RelativeEncoder encoder2;  
+
 
     public ShooterHardware() {
         shooter1 = new CANSparkMax(RobotMap.SHOOTER_S1_CAN_ID, MotorType.kBrushless);
         shooter2 = new CANSparkMax(RobotMap.SHOOTER_S2_CAN_ID, MotorType.kBrushless);
+        encoder1 = shooter1.getEncoder(); 
+        encoder2 = shooter2.getEncoder(); 
     }
 
     // CAN ID values will be stored in RobotMap.java but for now, just random till
@@ -46,11 +51,11 @@ public class ShooterHardware implements IShooterHardware {
 
     @Override
     public double getVelocityFrontEncoder() {
-        return (0.0);
+        return encoder1.getVelocity();
     }
 
     @Override
     public double getVelocityBackEncoder() {
-        return (0.0);
+        return encoder2.getVelocity();
     }
 }
