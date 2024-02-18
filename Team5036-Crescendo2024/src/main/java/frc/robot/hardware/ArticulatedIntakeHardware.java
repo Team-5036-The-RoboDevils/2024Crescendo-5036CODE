@@ -1,12 +1,9 @@
 package frc.robot.hardware;
-import frc.robot.RobotMap;
-import edu.wpi.first.wpilibj.SPI;
 
-import com.kauailabs.navx.frc.AHRS;
+import frc.robot.RobotMap;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-import edu.wpi.first.wpilibj.SPI;
 
 public class ArticulatedIntakeHardware implements IArticulatedIntake {
     private CANSparkMax arm; 

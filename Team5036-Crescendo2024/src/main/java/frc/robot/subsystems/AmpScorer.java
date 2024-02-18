@@ -1,10 +1,6 @@
 package frc.robot.subsystems;
 
-import frc.robot.hardware.AmpScorerHardware;
 import frc.robot.hardware.IAmpScorerHardware;
-import frc.robot.hardware.IDrivetrainHardware;
-
-import java.lang.Math;
 
 public class AmpScorer {
     private IAmpScorerHardware ampScorerHardware;
