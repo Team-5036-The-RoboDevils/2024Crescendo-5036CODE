@@ -40,13 +40,13 @@ public class ShooterHardware implements IShooterHardware {
     @Override
     public void setFrontMotorPower(double val) {
         shooter1.set(val); // can be +/- need to check in person
-        System.out.println("DEBUG - FRONT MOTOR POWER " + val);
+        //System.out.println("DEBUG - FRONT MOTOR POWER " + val);
     }
 
     @Override
     public void setBackMotorPower(double val) {
         shooter2.set(val); // can be +/- need to check in person
-        System.out.println("DEBUG - BACK MOTOR POWER " + val);
+        //System.out.println("DEBUG - BACK MOTOR POWER " + val);
     }
 
     @Override

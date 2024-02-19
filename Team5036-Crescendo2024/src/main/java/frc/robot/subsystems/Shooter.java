@@ -1,5 +1,6 @@
 package frc.robot.subsystems;
 
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.hardware.IShooterHardware;
 
 /*public class Shooter {
@@ -17,11 +18,15 @@ import frc.robot.hardware.IShooterHardware;
 }*/
 public class Shooter {
     private IShooterHardware hardware;
-    private final double kP; 
+    private double kP;
+    private final double FEED_FORWARD_MULTIPLIER;
 
     public Shooter(IShooterHardware hardware) {
         this.hardware = hardware;
-        kP = 0; 
+
+        // Adjust these constants as necessary
+        kP = 0.00015;
+        FEED_FORWARD_MULTIPLIER = 0.00017;
     }
 
     public void runOpenLoopFront(double val) {
@@ -32,26 +37,43 @@ public class Shooter {
         hardware.setBackMotorPower(val);
     }
 
-    private double getProportionalControllerOutput(double currentRPM, double desiredRPM) {
-        double error = currentRPM - desiredRPM; 
-        double output = error * kP; 
-        if (output <= 0) {
-            output = 0; 
-        } else if (output >= 1) {
-            output = 1; 
+    private double getProportionalControllerOutput(double currentRPM, double desiredRPM, boolean directionOutward) {
+        double error = Math.abs(desiredRPM) - Math.abs(currentRPM); 
+        //kP = SmartDashboard.getNumber("shooterKp", 0.0002);
+        double output = (error * kP) + (desiredRPM * FEED_FORWARD_MULTIPLIER);
+
+        //System.out.println("Proportional Output: " + output);
+        
+        if (!directionOutward) {
+            output *= -1;
         }
+
+        if (directionOutward) {
+            if (output <= 0) {
+                output = 0; 
+            } else if (output >= 1) {
+                output = 1; 
+            }
+        } else {
+            if (output <= -1) {
+                output = -1; 
+            } else if (output >= 0) {
+                output = 0; 
+            }
+        }
+
         return output; 
     }
 
-    public void setFrontMotorRunRpm(double desiredRPM) {
+    public void setFrontMotorRunRpm(double desiredRPM, boolean directionOutward) {
         double currentRPM = hardware.getVelocityFrontEncoder();
-        double output = getProportionalControllerOutput(currentRPM, desiredRPM);
+        double output = getProportionalControllerOutput(currentRPM, desiredRPM, directionOutward);
         hardware.setFrontMotorPower(output);
     }
 
-    public void setBackMotorRunRpm(double desiredRPM) {
+    public void setBackMotorRunRpm(double desiredRPM, boolean directionOutward) {
         double currentRPM = hardware.getVelocityBackEncoder();
-        double output = getProportionalControllerOutput(currentRPM, desiredRPM); 
+        double output = getProportionalControllerOutput(currentRPM, desiredRPM, directionOutward); 
         hardware.setBackMotorPower(output);
     }
 }

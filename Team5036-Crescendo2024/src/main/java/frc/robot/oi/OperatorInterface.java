@@ -27,4 +27,23 @@ public class OperatorInterface implements IOperatorInterface {
         return -operatorController.getRawAxis(1);
     }
 
+    @Override
+    public boolean getShooterClosedLoopTest(int index) {
+        return operatorController.getRawButton(index);
+    }
+
+    @Override
+    public boolean getShotSpeedButton() {
+        return operatorController.getRawAxis(3) > 0.15;
+    }
+
+    @Override
+    public boolean getHpIntakeSpeedButton() {
+       return operatorController.getRawAxis(2) > 0.15;
+    }
+
+    @Override
+    public boolean getAmpSpeedSpeedButton() {
+        return operatorController.getRawButton(2);
+    }
 }

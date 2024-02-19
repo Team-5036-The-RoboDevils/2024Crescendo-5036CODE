@@ -22,6 +22,8 @@ import frc.robot.subsystems.*;
  * project.
  */
 public class Robot extends TimedRobot {
+  IShooterHardware shooterHardware;
+
   OperatorInterface oi;
   Drivetrain drivetrain;
   AmpScorer ampScorer;
@@ -34,11 +36,12 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
+    shooterHardware = new ShooterHardware();
 
     oi = new OperatorInterface();
     drivetrain = new Drivetrain(new DrivetrainHardware());
     ampScorer = new AmpScorer(new AmpScorerHardware());
-    shooter = new Shooter(new ShooterHardware());
+    shooter = new Shooter(shooterHardware);
   }
 
   /**
@@ -62,6 +65,10 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Drivetrain Controller Rotate", oi.getDriveTrainRotate());
     SmartDashboard.putNumber("Operator Controller Shooter Open Loop", oi.getOpenLoopShooter());
 
+    SmartDashboard.putNumber("Front Shooter Vel: ", shooterHardware.getVelocityFrontEncoder());
+    SmartDashboard.putNumber("Back Shooter Vel: ", shooterHardware.getVelocityBackEncoder());
+    //System.out.println("Front Shooter Vel: " + shooterHardware.getVelocityFrontEncoder());
+    //System.out.println("Back Shooter Vel: " + shooterHardware.getVelocityBackEncoder());
   }
 
   /**
@@ -102,10 +109,46 @@ public class Robot extends TimedRobot {
   public void teleopPeriodic() {
     double forward = oi.getDriveTrainForward();
     double rotate = oi.getDriveTrainRotate();
-    double shooterOpenLoop = oi.getOpenLoopShooter();
+
+    forward = forward * Math.abs(forward);
+    //rotate = rotate * Math.abs(rotate);
+    rotate = rotate * rotate * rotate * 0.8;
+
+    double shooterOpenLoop = oi.getOpenLoopShooter();// * 0.15;
     drivetrain.arcadeDrive(forward, rotate);
-    shooter.runOpenLoopFront(shooterOpenLoop);
-    shooter.runOpenLoopBack(shooterOpenLoop);
+    //shooter.runOpenLoopFront(shooterOpenLoop / 2);
+    /*if (oi.getShooterClosedLoopTest(5)) {
+      shooter.setFrontMotorRunRpm(3000, true);
+      shooter.setBackMotorRunRpm(3000, true);
+      //shooter.runOpenLoopFront(0.7);
+      //shooter.runOpenLoopBack(0.7);
+    } else if (oi.getShooterClosedLoopTest(6)) {
+      shooter.setFrontMotorRunRpm(4500, true);
+      shooter.setBackMotorRunRpm(4500, true);
+    } else if (oi.getShooterClosedLoopTest(1)) {
+      shooter.setFrontMotorRunRpm(1500, false);
+      shooter.setBackMotorRunRpm(750, false);
+    } else {
+      shooter.runOpenLoopFront(shooterOpenLoop);
+      shooter.runOpenLoopBack(shooterOpenLoop);
+    }*/
+    if (oi.getShooterClosedLoopTest(6)) {
+      //shooter.setFrontMotorRunRpm(5300, true);
+      shooter.runOpenLoopFront(1.);
+      if (oi.getShotSpeedButton()) {
+        //shooter.setBackMotorRunRpm(5300, true);
+        shooter.runOpenLoopBack(1.);
+      }
+    } else if (oi.getHpIntakeSpeedButton()) {
+      shooter.setFrontMotorRunRpm(2500, false);
+      shooter.setBackMotorRunRpm(750, false);
+    } else if (oi.getAmpSpeedSpeedButton()) {
+      shooter.setFrontMotorRunRpm(500, true);
+      shooter.setBackMotorRunRpm(550, true);
+    } else {
+      shooter.runOpenLoopFront(0);
+      shooter.runOpenLoopBack(0);
+    }
   }
 
   /** This function is called once when the robot is disabled. */

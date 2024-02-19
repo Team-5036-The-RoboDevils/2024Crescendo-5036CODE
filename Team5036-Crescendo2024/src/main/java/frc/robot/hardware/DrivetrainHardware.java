@@ -30,13 +30,13 @@ public class DrivetrainHardware implements IDrivetrainHardware {
     @Override
     public void setLeftSidePower(double val) {
         left1.set(val);
-        // left2.set(val); Maybe a CAN ID conflict with these ones?
+        left2.set(val); //Maybe a CAN ID conflict with these ones?
     }
 
     @Override
     public void setRightSidePower(double val) {
         right1.set(-val);
-        // right2.set(val); Maybe a CAN ID conflict with these ones?
+        right2.set(val); //Maybe a CAN ID conflict with these ones?
     }
 
     @Override
