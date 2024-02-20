@@ -28,7 +28,9 @@ public class Robot extends TimedRobot {
   Drivetrain drivetrain;
   AmpScorer ampScorer;
   Shooter shooter;
+  ArticulatedIntake intake;
 
+  IArticulatedIntakeHardware intakeHardware;
   /**
    * This function is run when the robot is first started up and should be used
    * for any
@@ -37,11 +39,16 @@ public class Robot extends TimedRobot {
   @Override
   public void robotInit() {
     shooterHardware = new ShooterHardware();
+    intakeHardware = new ArticulatedIntakeHardware();
 
     oi = new OperatorInterface();
     drivetrain = new Drivetrain(new DrivetrainHardware());
     ampScorer = new AmpScorer(new AmpScorerHardware());
+
     shooter = new Shooter(shooterHardware);
+    intake = new ArticulatedIntake(intakeHardware);
+
+    intakeHardware.resetArmEncoder();
   }
 
   /**
@@ -56,14 +63,15 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-
+    double currentEncoderPos = intakeHardware.getPositionIntakeEncoder();
+    System.out.println("Encoder Pos is " + currentEncoderPos);
     double forward = oi.getDriveTrainForward();
     double rotate = oi.getDriveTrainRotate();
-    double shooterOpenLoop = oi.getOpenLoopShooter();
+   // double shooterOpenLoop = oi.getOpenLoopShooter();
 
     SmartDashboard.putNumber("Drivetrain Controller Forward", oi.getDriveTrainForward());
     SmartDashboard.putNumber("Drivetrain Controller Rotate", oi.getDriveTrainRotate());
-    SmartDashboard.putNumber("Operator Controller Shooter Open Loop", oi.getOpenLoopShooter());
+    SmartDashboard.putNumber("Operator Controller Intake Open Loop VALUE OF ANGLE", intake.getCurrentAngle());
 
     SmartDashboard.putNumber("Front Shooter Vel: ", shooterHardware.getVelocityFrontEncoder());
     SmartDashboard.putNumber("Back Shooter Vel: ", shooterHardware.getVelocityBackEncoder());
@@ -114,7 +122,7 @@ public class Robot extends TimedRobot {
     //rotate = rotate * Math.abs(rotate);
     rotate = rotate * rotate * rotate * 0.8;
 
-    double shooterOpenLoop = oi.getOpenLoopShooter();// * 0.15;
+ //   double shooterOpenLoop = oi.getOpenLoopShooter();// * 0.15;
     drivetrain.arcadeDrive(forward, rotate);
     //shooter.runOpenLoopFront(shooterOpenLoop / 2);
     /*if (oi.getShooterClosedLoopTest(5)) {
@@ -132,7 +140,7 @@ public class Robot extends TimedRobot {
       shooter.runOpenLoopFront(shooterOpenLoop);
       shooter.runOpenLoopBack(shooterOpenLoop);
     }*/
-    if (oi.getShooterClosedLoopTest(6)) {
+    if (oi.spinUp()) {
       //shooter.setFrontMotorRunRpm(5300, true);
       shooter.runOpenLoopFront(1.);
       if (oi.getShotSpeedButton()) {
@@ -145,12 +153,35 @@ public class Robot extends TimedRobot {
     } else if (oi.getAmpSpeedSpeedButton()) {
       shooter.setFrontMotorRunRpm(500, true);
       shooter.setBackMotorRunRpm(550, true);
-    } else {
+    } 
+     else {
       shooter.runOpenLoopFront(0);
       shooter.runOpenLoopBack(0);
     }
-  }
 
+    if (!oi.getArticulatedIntakeOpenLoopButton()){
+      System.out.println("Articulation button presseed");
+      //intake.controllerClosedLoopArticulation();
+      intake.controllerOpenLoopArticulation(0);
+    } else {
+      System.out.println("Articulation NOT button presseed");
+      double openLoopArm = oi.getArticulatedIntakeOpenLoopAxis();
+      intake.controllerOpenLoopArticulation(openLoopArm);
+    }
+    
+    if (oi.getIntakeOpenLoopButton()){
+      System.out.println("Intake button registered");
+      intake.runOpenLoopIntake(0.3);
+    } else if (oi.getOuttakeOpenLoopButton()){
+      System.out.println("Outtake button registered");
+      intake.runOpenLoopOuttake(-0.4);
+    } else {
+      System.out.println("Intake button NOT registered");
+      intake.runOpenLoopIntake(0);
+    }
+
+    
+  }
   /** This function is called once when the robot is disabled. */
   @Override
   public void disabledInit() {

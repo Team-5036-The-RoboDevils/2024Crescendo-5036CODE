@@ -1,10 +1,12 @@
 package frc.robot.hardware;
 
-public interface IArticulatedIntake {
+public interface IArticulatedIntakeHardware {
     public void setIntakeMotorPower(double val); 
 
     public void setArmMotorPower(double val); 
         
-    public double getPositionIntakeEncoder(); 
+    public double getPositionIntakeEncoder();
+
+    public void resetArmEncoder(); 
 
 }

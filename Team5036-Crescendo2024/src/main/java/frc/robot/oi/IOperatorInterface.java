@@ -5,13 +5,21 @@ public interface IOperatorInterface {
 
     public double getDriveTrainRotate();
 
-    public double getOpenLoopShooter();
+   // public double getOpenLoopShooter();
 
-    public boolean getShooterClosedLoopTest(int index); // temporary for testing
+    public boolean spinUp(); // temporary for testing
 
     public boolean getShotSpeedButton();
 
     public boolean getHpIntakeSpeedButton();
 
     public boolean getAmpSpeedSpeedButton();
+
+    public boolean getArticulatedIntakeOpenLoopButton();
+
+    public boolean getOuttakeOpenLoopButton();
+
+    public boolean getIntakeOpenLoopButton();
+
+    public double getArticulatedIntakeOpenLoopAxis();
 }

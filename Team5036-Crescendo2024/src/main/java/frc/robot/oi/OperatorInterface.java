@@ -22,14 +22,14 @@ public class OperatorInterface implements IOperatorInterface {
         return drivetrainController.getRawAxis(4);
     }
 
-    @Override
-    public double getOpenLoopShooter() {
-        return -operatorController.getRawAxis(1);
-    }
+    // @Override
+    // public double getOpenLoopShooter() {
+    //     return -operatorController.getRawAxis(1);
+    // }
 
     @Override
-    public boolean getShooterClosedLoopTest(int index) {
-        return operatorController.getRawButton(index);
+    public boolean spinUp() {
+        return operatorController.getRawButton(6);
     }
 
     @Override
@@ -45,5 +45,25 @@ public class OperatorInterface implements IOperatorInterface {
     @Override
     public boolean getAmpSpeedSpeedButton() {
         return operatorController.getRawButton(2);
+    }
+
+    @Override
+    public boolean getIntakeOpenLoopButton(){
+        return operatorController.getRawButton(4);
+    }
+
+    @Override
+    public boolean getOuttakeOpenLoopButton(){
+        return operatorController.getRawButton(1);
+    }
+
+    @Override
+    public boolean getArticulatedIntakeOpenLoopButton(){
+        return operatorController.getRawButton(5);
+    }
+
+    @Override
+    public double getArticulatedIntakeOpenLoopAxis(){
+        return -operatorController.getRawAxis(1);
     }
 }
