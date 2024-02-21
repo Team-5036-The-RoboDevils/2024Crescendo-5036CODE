@@ -64,7 +64,7 @@ public class Robot extends TimedRobot {
   @Override
   public void robotPeriodic() {
     double currentEncoderPos = intakeHardware.getPositionIntakeEncoder();
-    System.out.println("Encoder Pos is " + currentEncoderPos);
+    //System.out.println("Encoder Pos is " + currentEncoderPos);
     double forward = oi.getDriveTrainForward();
     double rotate = oi.getDriveTrainRotate();
    // double shooterOpenLoop = oi.getOpenLoopShooter();
@@ -77,6 +77,7 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Back Shooter Vel: ", shooterHardware.getVelocityBackEncoder());
     //System.out.println("Front Shooter Vel: " + shooterHardware.getVelocityFrontEncoder());
     //System.out.println("Back Shooter Vel: " + shooterHardware.getVelocityBackEncoder());
+    SmartDashboard.putNumber("Tuning stick", oi.getArticulatedIntakePIDTuningAxis(0.04, 0.14));
   }
 
   /**
@@ -123,7 +124,7 @@ public class Robot extends TimedRobot {
     rotate = rotate * rotate * rotate * 0.8;
 
  //   double shooterOpenLoop = oi.getOpenLoopShooter();// * 0.15;
-    drivetrain.arcadeDrive(forward, rotate);
+    //drivetrain.arcadeDrive(forward, rotate);
     //shooter.runOpenLoopFront(shooterOpenLoop / 2);
     /*if (oi.getShooterClosedLoopTest(5)) {
       shooter.setFrontMotorRunRpm(3000, true);
@@ -159,24 +160,27 @@ public class Robot extends TimedRobot {
       shooter.runOpenLoopBack(0);
     }
 
-    if (!oi.getArticulatedIntakeOpenLoopButton()){
+    if (oi.getArticulatedIntakeOpenLoopButton()){ // flip this condition after
       System.out.println("Articulation button presseed");
-      //intake.controllerClosedLoopArticulation();
-      intake.controllerOpenLoopArticulation(0);
+      double gravityConst = oi.getArticulatedIntakePIDTuningAxis(0.04, 0.14);
+      
+      intake.controllerClosedLoopArticulation(0, 0, gravityConst);
+      //intake.controllerOpenLoopArticulation(0);
     } else {
       System.out.println("Articulation NOT button presseed");
       double openLoopArm = oi.getArticulatedIntakeOpenLoopAxis();
+      openLoopArm = openLoopArm * Math.abs(openLoopArm) * 0.25;
       intake.controllerOpenLoopArticulation(openLoopArm);
     }
     
     if (oi.getIntakeOpenLoopButton()){
-      System.out.println("Intake button registered");
-      intake.runOpenLoopIntake(0.3);
+      //System.out.println("Intake button registered");
+      intake.runOpenLoopIntake(0.6);
     } else if (oi.getOuttakeOpenLoopButton()){
-      System.out.println("Outtake button registered");
-      intake.runOpenLoopOuttake(-0.4);
+      //System.out.println("Outtake button registered");
+      intake.runOpenLoopOuttake(-1);
     } else {
-      System.out.println("Intake button NOT registered");
+      //System.out.println("Intake button NOT registered");
       intake.runOpenLoopIntake(0);
     }
 

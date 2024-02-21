@@ -10,10 +10,12 @@ public class ArticulatedIntakeHardware implements IArticulatedIntakeHardware {
     private CANSparkMax intake;
     private RelativeEncoder encoder;
 
+
     public ArticulatedIntakeHardware() {
         arm = new CANSparkMax(RobotMap.INTAKEROLLER_M1_CAN_ID, MotorType.kBrushless);
         intake = new CANSparkMax(RobotMap.INTAKEROLLER_M2_CAN_ID, MotorType.kBrushless);
         encoder = arm.getEncoder();
+        arm.enableVoltageCompensation(12);
     }
 
     @Override

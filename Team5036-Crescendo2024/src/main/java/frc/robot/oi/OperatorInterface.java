@@ -5,10 +5,12 @@ import edu.wpi.first.wpilibj.Joystick;
 public class OperatorInterface implements IOperatorInterface {
     private Joystick drivetrainController;
     private Joystick operatorController;
+    private Joystick tuningJoystick;
 
     public OperatorInterface() {
         drivetrainController = new Joystick(0);
         operatorController = new Joystick(1);
+        tuningJoystick = new Joystick(2);
     }
 
     @Override
@@ -65,5 +67,10 @@ public class OperatorInterface implements IOperatorInterface {
     @Override
     public double getArticulatedIntakeOpenLoopAxis(){
         return -operatorController.getRawAxis(1);
+    }
+
+    @Override
+    public double getArticulatedIntakePIDTuningAxis(double a, double b){
+        return ((tuningJoystick.getRawAxis(2) + 1) / 2) * (b - a) + a;
     }
 }

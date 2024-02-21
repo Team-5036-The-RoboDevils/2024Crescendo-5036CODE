@@ -22,4 +22,6 @@ public interface IOperatorInterface {
     public boolean getIntakeOpenLoopButton();
 
     public double getArticulatedIntakeOpenLoopAxis();
+
+    public double getArticulatedIntakePIDTuningAxis(double a, double b);
 }
