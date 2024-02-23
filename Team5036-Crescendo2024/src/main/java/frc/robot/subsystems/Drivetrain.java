@@ -26,7 +26,7 @@ public class Drivetrain {
     }
 
     public void resetEncoders() {
-        hardware.resetEncoderPos(); // This applies to both encoders?
+        hardware.resetEncoderPos();
     }
 
     private double getEncoderPos() {
@@ -34,6 +34,7 @@ public class Drivetrain {
     }
 
     public double getDistTravelled() {
+        // Comment from Tahmid: What is this dogwater? We're using NEOs, not NEO 550s. Also, gear ratio plays a role here.
         double currentpos = getEncoderPos();
         double singularRotation = (2 * Math.PI * 3) / 42; // 42 encoder ticks on NEO 550
         // Attempting to Calculate Distance - Will push for now

@@ -5,8 +5,11 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
+import frc.robot.hardware.*;
+import frc.robot.oi.*;
+import frc.robot.subsystems.*;
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -18,11 +21,14 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
  * project.
  */
 public class Robot extends TimedRobot {
-  private static final String kDefaultAuto = "Default";
-  private static final String kCustomAuto = "My Auto";
-  private String m_autoSelected;
-  private final SendableChooser<String> m_chooser = new SendableChooser<>();
+  IShooterHardware shooterHardware;
 
+  OperatorInterface oi;
+  Drivetrain drivetrain;
+  Shooter shooter;
+  ArticulatedIntake intake;
+
+  IArticulatedIntakeHardware intakeHardware;
   /**
    * This function is run when the robot is first started up and should be used
    * for any
@@ -30,9 +36,15 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotInit() {
-    m_chooser.setDefaultOption("Default Auto", kDefaultAuto);
-    m_chooser.addOption("My Auto", kCustomAuto);
-    SmartDashboard.putData("Auto choices", m_chooser);
+    shooterHardware = new ShooterHardware();
+    intakeHardware = new ArticulatedIntakeHardware();
+
+    oi = new OperatorInterface();
+    drivetrain = new Drivetrain(new DrivetrainHardware());
+    shooter = new Shooter(shooterHardware);
+    intake = new ArticulatedIntake(intakeHardware);
+
+    intakeHardware.resetArmEncoder();
   }
 
   /**
@@ -47,6 +59,12 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
+    SmartDashboard.putNumber("Intake Encoder Pos:", intakeHardware.getPositionIntakeEncoder());
+    SmartDashboard.putNumber("Drivetrain Controller Forward", oi.getDriveTrainForward());
+    SmartDashboard.putNumber("Drivetrain Controller Rotate", oi.getDriveTrainRotate());
+    SmartDashboard.putNumber("Operator Controller Intake Open Loop VALUE OF ANGLE", intake.getCurrentAngle());
+    SmartDashboard.putNumber("Front Shooter Vel: ", shooterHardware.getVelocityFrontEncoder());
+    SmartDashboard.putNumber("Back Shooter Vel: ", shooterHardware.getVelocityBackEncoder());
   }
 
   /**
@@ -68,62 +86,96 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-    m_autoSelected = m_chooser.getSelected();
-    // m_autoSelected = SmartDashboard.getString("Auto Selector", kDefaultAuto);
-    System.out.println("Auto selected: " + m_autoSelected);
+    // TODO: Implement autonomous modes.
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-    switch (m_autoSelected) {
-      case kCustomAuto:
-        // Put custom auto code here
-        break;
-      case kDefaultAuto:
-      default:
-        // Put default auto code here
-        break;
-    }
+    // TODO: Implement autonomous modes.
   }
 
   /** This function is called once when teleop is enabled. */
   @Override
-  public void teleopInit() {
-  }
+  public void teleopInit() {}
 
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
-  }
+    double forward = oi.getDriveTrainForward();
+    double rotate = oi.getDriveTrainRotate();
 
+    // Drive
+    forward = forward * Math.abs(forward);
+    rotate = rotate * rotate * rotate * 0.8;
+    drivetrain.arcadeDrive(forward, rotate);
+
+    // Articulation of intake
+    if (oi.deployArticulatedIntake()) {
+      intake.controllerClosedLoopArticulation(-5);
+    } else if (oi.getArticulatedIntakeOpenLoopButton()) {
+      intake.controllerOpenLoopArticulation(oi.getArticulatedIntakeOpenLoopAxis() * 0.2);
+    } else {
+      intake.controllerClosedLoopArticulation(135);
+    }
+
+    // Front shooter motor
+    if (oi.spinUp() || oi.getShotSpeedButton()) {
+      shooter.runOpenLoopFront(1.);
+    } else if (oi.getHpIntakeSpeedButton()) {
+      shooter.setFrontMotorRunRpm(2500, false);
+    } else if (oi.getAmpSpeedSpeedButton()) {
+      shooter.setFrontMotorRunRpm(500, true);
+    } else {
+      shooter.runOpenLoopFront(0);
+    }
+
+    // Back shooter motor
+    if (oi.getShotSpeedButton()) {
+      shooter.runOpenLoopBack(1.);
+    } else if (oi.getHpIntakeSpeedButton()) {
+      shooter.setBackMotorRunRpm(750, false);
+    } else if (oi.getAmpSpeedSpeedButton()) {
+      shooter.setBackMotorRunRpm(550, true);
+    } else {
+      shooter.runOpenLoopBack(0);
+    }
+
+    // Intake motor
+    if (oi.deployArticulatedIntake()) {
+      intake.runOpenLoopIntake(0.9);
+    } else if (oi.getShotSpeedButton())  {
+      intake.runOpenLoopIntake(-1.);
+    } else if (oi.getAmpSpeedSpeedButton()) {
+      intake.runOpenLoopIntake(-1.);
+    } else if (oi.getArticulatedIntakeOpenLoopButton()) {
+      intake.runOpenLoopIntake(oi.getIntakeManualSpeed());
+    } else {
+      intake.runOpenLoopIntake(0);
+    }    
+  }
+  
   /** This function is called once when the robot is disabled. */
   @Override
-  public void disabledInit() {
-  }
+  public void disabledInit() {}
 
   /** This function is called periodically when disabled. */
   @Override
-  public void disabledPeriodic() {
-  }
+  public void disabledPeriodic() {}
 
   /** This function is called once when test mode is enabled. */
   @Override
-  public void testInit() {
-  }
+  public void testInit() {}
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {
-  }
+  public void testPeriodic() {}
 
   /** This function is called once when the robot is first started up. */
   @Override
-  public void simulationInit() {
-  }
+  public void simulationInit() {}
 
   /** This function is called periodically whilst in simulation. */
   @Override
-  public void simulationPeriodic() {
-  }
+  public void simulationPeriodic() {}
 }
