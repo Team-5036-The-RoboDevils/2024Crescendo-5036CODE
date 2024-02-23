@@ -14,5 +14,4 @@ public interface IDrivetrainHardware {
     public void resetGyro();
 
     public double getAngle();
-
 }

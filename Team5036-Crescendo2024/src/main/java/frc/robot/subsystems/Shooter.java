@@ -1,21 +1,7 @@
 package frc.robot.subsystems;
 
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import frc.robot.hardware.IShooterHardware;
 
-/*public class Shooter {
-
-    public static void main(String[] args) {
-
-        shooterHardware shooter = new shooterHardware();
-        System.out.println("CURRENT ROBOT STATE:");
-        shooter.setFrontMotorPower(20);
-        shooter.setBackMotorPower(30);
-        System.out.println(shooter.getVelocityFrontEncoder());
-        System.out.println(shooter.getVelocityBackEncoder());
-    }
-
-}*/
 public class Shooter {
     private IShooterHardware hardware;
     private double kP;
@@ -39,10 +25,7 @@ public class Shooter {
 
     private double getProportionalControllerOutput(double currentRPM, double desiredRPM, boolean directionOutward) {
         double error = Math.abs(desiredRPM) - Math.abs(currentRPM); 
-        //kP = SmartDashboard.getNumber("shooterKp", 0.0002);
         double output = (error * kP) + (desiredRPM * FEED_FORWARD_MULTIPLIER);
-
-        //System.out.println("Proportional Output: " + output);
         
         if (!directionOutward) {
             output *= -1;

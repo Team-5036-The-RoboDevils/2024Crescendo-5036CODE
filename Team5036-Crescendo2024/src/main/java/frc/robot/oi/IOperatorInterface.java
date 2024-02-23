@@ -5,8 +5,6 @@ public interface IOperatorInterface {
 
     public double getDriveTrainRotate();
 
-   // public double getOpenLoopShooter();
-
     public boolean spinUp(); // temporary for testing
 
     public boolean getShotSpeedButton();
@@ -24,4 +22,8 @@ public interface IOperatorInterface {
     public double getArticulatedIntakeOpenLoopAxis();
 
     public double getArticulatedIntakePIDTuningAxis(double a, double b);
+
+    public boolean deployArticulatedIntake();
+
+    public double getIntakeManualSpeed();
 }

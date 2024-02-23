@@ -1,24 +1,9 @@
 package frc.robot.hardware;
 
-//Lets have 2 different classes
-/*Start with ShooterHardware
-Similar to drivetrain hardware
-1 method that sets power of one motor
-1 method that sets power of second motor
-1 method that gets encoder velocity from one motor
-1 method that gets encoder velocity from the other motor
-Then we can have a Shooter class that takes a ShooterHardware object and perform 
-any necessary logic like going a certain speed */
-//First 2 methods just print something
-//2nd 2 methods return 0//
 import frc.robot.RobotMap;
-import edu.wpi.first.wpilibj.SPI;
-
-import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
-import edu.wpi.first.wpilibj.SPI;
 
 public class ShooterHardware implements IShooterHardware {
     private CANSparkMax shooter1;

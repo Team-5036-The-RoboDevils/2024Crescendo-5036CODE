@@ -1,7 +1,6 @@
 package frc.robot.hardware;
 
 import frc.robot.RobotMap;
-
 import edu.wpi.first.wpilibj.SPI;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;

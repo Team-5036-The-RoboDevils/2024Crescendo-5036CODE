@@ -8,5 +8,4 @@ public interface IArticulatedIntakeHardware {
     public double getPositionIntakeEncoder();
 
     public void resetArmEncoder(); 
-
 }

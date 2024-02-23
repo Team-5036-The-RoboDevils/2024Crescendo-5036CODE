@@ -22,11 +22,10 @@ public class AmpScorer {
     }
 
     public void flipIn() {
-        this.ampScorerHardware.setAngle(170.0);
+        ampScorerHardware.setAngle(170.0);
     }
 
     public void flipOut() {
-        this.ampScorerHardware.setAngle(10.0);
+        ampScorerHardware.setAngle(10.0);
     }
-
 }

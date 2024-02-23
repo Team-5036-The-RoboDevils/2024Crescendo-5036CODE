@@ -21,13 +21,11 @@ public class ArticulatedIntakeHardware implements IArticulatedIntakeHardware {
     @Override
 
     public void setIntakeMotorPower(double val) {
-        System.out.println("Value Passed in to INTAKE is = " + val);
         intake.set(val); 
     }
 
     @Override
     public void setArmMotorPower(double val) {
-        System.out.println("Value Passed in to ARM MOTOR is = " + val);
         arm.set(val); 
     }
     

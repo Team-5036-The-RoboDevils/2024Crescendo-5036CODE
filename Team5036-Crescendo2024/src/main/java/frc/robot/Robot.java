@@ -5,7 +5,6 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.TimedRobot;
-import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import frc.robot.hardware.*;
@@ -26,7 +25,6 @@ public class Robot extends TimedRobot {
 
   OperatorInterface oi;
   Drivetrain drivetrain;
-  AmpScorer ampScorer;
   Shooter shooter;
   ArticulatedIntake intake;
 
@@ -43,8 +41,6 @@ public class Robot extends TimedRobot {
 
     oi = new OperatorInterface();
     drivetrain = new Drivetrain(new DrivetrainHardware());
-    ampScorer = new AmpScorer(new AmpScorerHardware());
-
     shooter = new Shooter(shooterHardware);
     intake = new ArticulatedIntake(intakeHardware);
 
@@ -63,21 +59,12 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void robotPeriodic() {
-    double currentEncoderPos = intakeHardware.getPositionIntakeEncoder();
-    //System.out.println("Encoder Pos is " + currentEncoderPos);
-    double forward = oi.getDriveTrainForward();
-    double rotate = oi.getDriveTrainRotate();
-   // double shooterOpenLoop = oi.getOpenLoopShooter();
-
+    SmartDashboard.putNumber("Intake Encoder Pos:", intakeHardware.getPositionIntakeEncoder());
     SmartDashboard.putNumber("Drivetrain Controller Forward", oi.getDriveTrainForward());
     SmartDashboard.putNumber("Drivetrain Controller Rotate", oi.getDriveTrainRotate());
     SmartDashboard.putNumber("Operator Controller Intake Open Loop VALUE OF ANGLE", intake.getCurrentAngle());
-
     SmartDashboard.putNumber("Front Shooter Vel: ", shooterHardware.getVelocityFrontEncoder());
     SmartDashboard.putNumber("Back Shooter Vel: ", shooterHardware.getVelocityBackEncoder());
-    //System.out.println("Front Shooter Vel: " + shooterHardware.getVelocityFrontEncoder());
-    //System.out.println("Back Shooter Vel: " + shooterHardware.getVelocityBackEncoder());
-    SmartDashboard.putNumber("Tuning stick", oi.getArticulatedIntakePIDTuningAxis(0.04, 0.14));
   }
 
   /**
@@ -99,19 +86,18 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
-
+    // TODO: Implement autonomous modes.
   }
 
   /** This function is called periodically during autonomous. */
   @Override
   public void autonomousPeriodic() {
-
+    // TODO: Implement autonomous modes.
   }
 
   /** This function is called once when teleop is enabled. */
   @Override
-  public void teleopInit() {
-  }
+  public void teleopInit() {}
 
   /** This function is called periodically during operator control. */
   @Override
@@ -119,100 +105,77 @@ public class Robot extends TimedRobot {
     double forward = oi.getDriveTrainForward();
     double rotate = oi.getDriveTrainRotate();
 
+    // Drive
     forward = forward * Math.abs(forward);
-    //rotate = rotate * Math.abs(rotate);
     rotate = rotate * rotate * rotate * 0.8;
+    drivetrain.arcadeDrive(forward, rotate);
 
- //   double shooterOpenLoop = oi.getOpenLoopShooter();// * 0.15;
-    //drivetrain.arcadeDrive(forward, rotate);
-    //shooter.runOpenLoopFront(shooterOpenLoop / 2);
-    /*if (oi.getShooterClosedLoopTest(5)) {
-      shooter.setFrontMotorRunRpm(3000, true);
-      shooter.setBackMotorRunRpm(3000, true);
-      //shooter.runOpenLoopFront(0.7);
-      //shooter.runOpenLoopBack(0.7);
-    } else if (oi.getShooterClosedLoopTest(6)) {
-      shooter.setFrontMotorRunRpm(4500, true);
-      shooter.setBackMotorRunRpm(4500, true);
-    } else if (oi.getShooterClosedLoopTest(1)) {
-      shooter.setFrontMotorRunRpm(1500, false);
-      shooter.setBackMotorRunRpm(750, false);
+    // Articulation of intake
+    if (oi.deployArticulatedIntake()) {
+      intake.controllerClosedLoopArticulation(-5);
+    } else if (oi.getArticulatedIntakeOpenLoopButton()) {
+      intake.controllerOpenLoopArticulation(oi.getArticulatedIntakeOpenLoopAxis() * 0.2);
     } else {
-      shooter.runOpenLoopFront(shooterOpenLoop);
-      shooter.runOpenLoopBack(shooterOpenLoop);
-    }*/
-    if (oi.spinUp()) {
-      //shooter.setFrontMotorRunRpm(5300, true);
+      intake.controllerClosedLoopArticulation(135);
+    }
+
+    // Front shooter motor
+    if (oi.spinUp() || oi.getShotSpeedButton()) {
       shooter.runOpenLoopFront(1.);
-      if (oi.getShotSpeedButton()) {
-        //shooter.setBackMotorRunRpm(5300, true);
-        shooter.runOpenLoopBack(1.);
-      }
     } else if (oi.getHpIntakeSpeedButton()) {
       shooter.setFrontMotorRunRpm(2500, false);
-      shooter.setBackMotorRunRpm(750, false);
     } else if (oi.getAmpSpeedSpeedButton()) {
       shooter.setFrontMotorRunRpm(500, true);
-      shooter.setBackMotorRunRpm(550, true);
-    } 
-     else {
+    } else {
       shooter.runOpenLoopFront(0);
+    }
+
+    // Back shooter motor
+    if (oi.getShotSpeedButton()) {
+      shooter.runOpenLoopBack(1.);
+    } else if (oi.getHpIntakeSpeedButton()) {
+      shooter.setBackMotorRunRpm(750, false);
+    } else if (oi.getAmpSpeedSpeedButton()) {
+      shooter.setBackMotorRunRpm(550, true);
+    } else {
       shooter.runOpenLoopBack(0);
     }
 
-    if (oi.getArticulatedIntakeOpenLoopButton()){ // flip this condition after
-      System.out.println("Articulation button presseed");
-      double gravityConst = oi.getArticulatedIntakePIDTuningAxis(0.04, 0.14);
-      
-      intake.controllerClosedLoopArticulation(0, 0, gravityConst);
-      //intake.controllerOpenLoopArticulation(0);
+    // Intake motor
+    if (oi.deployArticulatedIntake()) {
+      intake.runOpenLoopIntake(0.9);
+    } else if (oi.getShotSpeedButton())  {
+      intake.runOpenLoopIntake(-1.);
+    } else if (oi.getAmpSpeedSpeedButton()) {
+      intake.runOpenLoopIntake(-1.);
+    } else if (oi.getArticulatedIntakeOpenLoopButton()) {
+      intake.runOpenLoopIntake(oi.getIntakeManualSpeed());
     } else {
-      System.out.println("Articulation NOT button presseed");
-      double openLoopArm = oi.getArticulatedIntakeOpenLoopAxis();
-      openLoopArm = openLoopArm * Math.abs(openLoopArm) * 0.25;
-      intake.controllerOpenLoopArticulation(openLoopArm);
-    }
-    
-    if (oi.getIntakeOpenLoopButton()){
-      //System.out.println("Intake button registered");
-      intake.runOpenLoopIntake(0.6);
-    } else if (oi.getOuttakeOpenLoopButton()){
-      //System.out.println("Outtake button registered");
-      intake.runOpenLoopOuttake(-1);
-    } else {
-      //System.out.println("Intake button NOT registered");
       intake.runOpenLoopIntake(0);
-    }
-
-    
+    }    
   }
+  
   /** This function is called once when the robot is disabled. */
   @Override
-  public void disabledInit() {
-  }
+  public void disabledInit() {}
 
   /** This function is called periodically when disabled. */
   @Override
-  public void disabledPeriodic() {
-  }
+  public void disabledPeriodic() {}
 
   /** This function is called once when test mode is enabled. */
   @Override
-  public void testInit() {
-  }
+  public void testInit() {}
 
   /** This function is called periodically during test mode. */
   @Override
-  public void testPeriodic() {
-  }
+  public void testPeriodic() {}
 
   /** This function is called once when the robot is first started up. */
   @Override
-  public void simulationInit() {
-  }
+  public void simulationInit() {}
 
   /** This function is called periodically whilst in simulation. */
   @Override
-  public void simulationPeriodic() {
-  }
+  public void simulationPeriodic() {}
 }

@@ -7,7 +7,7 @@ public class AmpScorerHardware implements IAmpScorerHardware {
     private Servo ServoShooter;
 
     public AmpScorerHardware() {
-        ServoShooter = new Servo(RobotMap.ServoPort);
+        ServoShooter = new Servo(RobotMap.AMP_SERVO_PWM);
 
     }
 
@@ -15,5 +15,4 @@ public class AmpScorerHardware implements IAmpScorerHardware {
         ServoShooter.setAngle(val);
         return ServoShooter.getAngle();
     }
-
 }
