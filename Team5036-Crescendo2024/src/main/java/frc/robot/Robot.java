@@ -142,8 +142,8 @@ public class Robot extends TimedRobot {
     }
 
     // Intake motor
-    if (oi.deployArticulatedIntake()) {
-      intake.runOpenLoopIntake(0.9);
+    if (oi.deployArticulatedIntake()) { // Add a condition here so that it only starts running when angle is below a certain amount.
+      intake.runOpenLoopIntake(0.9); // Play with this value. See if just 0.6 still works.
     } else if (oi.getShotSpeedButton())  {
       intake.runOpenLoopIntake(-1.);
     } else if (oi.getAmpSpeedSpeedButton()) {
