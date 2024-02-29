@@ -4,6 +4,8 @@
 
 package frc.robot;
 
+import edu.wpi.first.wpilibj.Timer;
+
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
@@ -65,6 +67,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Operator Controller Intake Open Loop VALUE OF ANGLE", intake.getCurrentAngle());
     SmartDashboard.putNumber("Front Shooter Vel: ", shooterHardware.getVelocityFrontEncoder());
     SmartDashboard.putNumber("Back Shooter Vel: ", shooterHardware.getVelocityBackEncoder());
+    SmartDashboard.putNumber("Value of encoder ticks for 1m is:", drivetrain.getEncoderPos());
+    
   }
 
   /**
@@ -86,7 +90,42 @@ public class Robot extends TimedRobot {
    */
   @Override
   public void autonomousInit() {
+    drivetrain.resetEncoders();
+    double targetDist = 200;
+    double currentPos = 0;
+    double ConvertedDist = 0;
+    
     // TODO: Implement autonomous modes.
+
+    // Shooter Auto for Middle Placement
+    shooter.runOpenLoopFront(1);
+    Timer.delay(5); // play around with this
+    shooter.runOpenLoopBack(1);
+    Timer.delay(2); // play around with this
+    shooter.runOpenLoopFront(0); 
+    shooter.runOpenLoopBack(0);
+
+    // figure ticks out by pushing a robot a metre and figuring out how many ticks
+
+    // Drive Auto for Middle Placement
+
+     while(drivetrain.getDistTravelled() <= targetDist && isAutonomous()){
+      SmartDashboard.putNumber("Distance covered", ConvertedDist);
+      double forward = -0.3;
+      double rotate = 0;
+      drivetrain.arcadeDrive(forward, rotate);
+      intake.controllerClosedLoopArticulation(0);
+      intake.runOpenLoopIntake(0.4);
+     }
+     double forward = 0;
+     double rotate = 0;
+     drivetrain.arcadeDrive(forward, rotate);
+     
+
+    // Intake Note Auto for Middle Placement
+    // Move arm down, start intake, keep intake 
+
+
   }
 
   /** This function is called periodically during autonomous. */
@@ -102,6 +141,7 @@ public class Robot extends TimedRobot {
   /** This function is called periodically during operator control. */
   @Override
   public void teleopPeriodic() {
+    drivetrain.resetEncoders();
     double forward = oi.getDriveTrainForward();
     double rotate = oi.getDriveTrainRotate();
 
@@ -110,13 +150,14 @@ public class Robot extends TimedRobot {
     rotate = rotate * rotate * rotate * 0.8;
     drivetrain.arcadeDrive(forward, rotate);
 
+
     // Articulation of intake
     if (oi.deployArticulatedIntake()) {
-      intake.controllerClosedLoopArticulation(-5);
+      intake.controllerClosedLoopArticulation(-5); // this too
     } else if (oi.getArticulatedIntakeOpenLoopButton()) {
       intake.controllerOpenLoopArticulation(oi.getArticulatedIntakeOpenLoopAxis() * 0.2);
     } else {
-      intake.controllerClosedLoopArticulation(135);
+      intake.controllerClosedLoopArticulation(135); //play with these 
     }
 
     // Front shooter motor

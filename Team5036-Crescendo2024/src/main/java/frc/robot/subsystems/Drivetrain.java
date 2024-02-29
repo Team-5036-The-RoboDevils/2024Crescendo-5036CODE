@@ -29,16 +29,14 @@ public class Drivetrain {
         hardware.resetEncoderPos();
     }
 
-    private double getEncoderPos() {
+    public double getEncoderPos() {
         return (hardware.getLeftEncoderPos() + hardware.getRightEncoderPos()) / 2;
     }
 
     public double getDistTravelled() {
         // Comment from Tahmid: What is this dogwater? We're using NEOs, not NEO 550s. Also, gear ratio plays a role here.
-        double currentpos = getEncoderPos();
-        double singularRotation = (2 * Math.PI * 3) / 42; // 42 encoder ticks on NEO 550
-        // Attempting to Calculate Distance - Will push for now
-        return 1.;
+        double currentPos = getEncoderPos();
+        return convertEncoderPosToCm(currentPos);
     }
 
     public void resetGyro() {
@@ -51,5 +49,13 @@ public class Drivetrain {
 
     public double getHeading() {
         return hardware.getAngle() % 360.;
+    }
+
+    private double convertEncoderPosToCm(double encoderPos){
+        // 375.2 encoder ticks for 100 cm (1 m) measured with middle wheel. 
+        double converterConst = -3.752;
+        double convertedDist = encoderPos / converterConst;
+        return convertedDist;
+
     }
 }

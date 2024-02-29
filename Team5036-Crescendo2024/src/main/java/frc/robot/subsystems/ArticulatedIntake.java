@@ -41,12 +41,7 @@ public class ArticulatedIntake {
                 // Just pass feed forward value.
                 intake.setArmMotorPower(feedForwardVal);
             }
-        } else if (desiredAngle < EXTREME_VAL_MIN && currentAngle < EXTREME_VAL_MIN) {
-                // We're at the extremes so, no need for power.
-                intake.setArmMotorPower(0);
-        } else if (desiredAngle > EXTREME_VAL_MAX && currentAngle > EXTREME_VAL_MAX) {
-                // We're at the extremes so, no need for power.
-                intake.setArmMotorPower(0);
+
         } else {
             // Run proportional controller + feed forward value
             double output = (error * kP) + feedForwardVal;
@@ -79,5 +74,6 @@ public class ArticulatedIntake {
         return encoderPosToAngle(currentEncoderPos);
     }
 }
+// HELLO
     
 
