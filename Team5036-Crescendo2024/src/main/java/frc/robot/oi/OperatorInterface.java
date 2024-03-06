@@ -44,16 +44,14 @@ public class OperatorInterface implements IOperatorInterface {
 
     @Override
     public boolean getIntakeOpenLoopButton(){
-        // return operatorController.getRawButton(4);
-        // should just get rid of this
-        return false;
+         return operatorController.getRawButton(4);
+        // should just get rid of th
     }
 
     @Override
     public boolean getOuttakeOpenLoopButton(){
-        // return operatorController.getRawButton(1);
+        return operatorController.getRawButton(1);
         // should just get rid of this
-        return false;
     }
 
     @Override

@@ -68,6 +68,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Front Shooter Vel: ", shooterHardware.getVelocityFrontEncoder());
     SmartDashboard.putNumber("Back Shooter Vel: ", shooterHardware.getVelocityBackEncoder());
     SmartDashboard.putNumber("Value of encoder ticks for 1m is:", drivetrain.getEncoderPos());
+    SmartDashboard.putNumber("Arm motor power = ", intakeHardware.getArmPower());
+
     
   }
 
@@ -153,13 +155,23 @@ public class Robot extends TimedRobot {
 
     // Articulation of intake
     if (oi.deployArticulatedIntake()) {
-      intake.controllerClosedLoopArticulation(-5); // this too
+      intake.controllerClosedLoopArticulation(-23); // this too
     } else if (oi.getArticulatedIntakeOpenLoopButton()) {
       intake.controllerOpenLoopArticulation(oi.getArticulatedIntakeOpenLoopAxis() * 0.2);
     } else {
-      intake.controllerClosedLoopArticulation(135); //play with these 
+      intake.controllerClosedLoopArticulation(145); //play with these 
     }
 
+
+    // intake
+    // if(oi.getIntakeOpenLoopButton()){
+    //   intake.setIntakeMotorPower(0.6);
+    // } 
+    
+    // if (oi.getOuttakeOpenLoopButton()) {
+    //   intake.setOuttakeMotorPower(0.6);
+    // }
+    
     // Front shooter motor
     if (oi.spinUp() || oi.getShotSpeedButton()) {
       shooter.runOpenLoopFront(1.);
@@ -184,11 +196,12 @@ public class Robot extends TimedRobot {
 
     // Intake motor
     if (oi.deployArticulatedIntake()) { // Add a condition here so that it only starts running when angle is below a certain amount.
-      intake.runOpenLoopIntake(0.9); // Play with this value. See if just 0.6 still works.
+      intake.runOpenLoopIntake(0.7); // Play with this value. See if just 0.6 still works.
     } else if (oi.getShotSpeedButton())  {
       intake.runOpenLoopIntake(-1.);
     } else if (oi.getAmpSpeedSpeedButton()) {
-      intake.runOpenLoopIntake(-1.);
+      Timer.delay(1.0);
+      intake.runOpenLoopIntake(-0.6);
     } else if (oi.getArticulatedIntakeOpenLoopButton()) {
       intake.runOpenLoopIntake(oi.getIntakeManualSpeed());
     } else {

@@ -13,7 +13,7 @@ public class ArticulatedIntakeHardware implements IArticulatedIntakeHardware {
 
     public ArticulatedIntakeHardware() {
         arm = new CANSparkMax(RobotMap.INTAKEROLLER_M1_CAN_ID, MotorType.kBrushless);
-        intake = new CANSparkMax(RobotMap.INTAKEROLLER_M2_CAN_ID, MotorType.kBrushless);
+        intake = new CANSparkMax(RobotMap.INTAKEROLLER_M2_CAN_ID, MotorType.kBrushed);
         encoder = arm.getEncoder();
         arm.enableVoltageCompensation(12);
     }
@@ -23,6 +23,8 @@ public class ArticulatedIntakeHardware implements IArticulatedIntakeHardware {
     public void setIntakeMotorPower(double val) {
         intake.set(val); 
     }
+
+ 
 
     @Override
     public void setArmMotorPower(double val) {
@@ -35,5 +37,9 @@ public class ArticulatedIntakeHardware implements IArticulatedIntakeHardware {
 
     public void resetArmEncoder() {
         encoder.setPosition(0);
+    }
+    
+    public double getArmPower(){
+        return intake.getAppliedOutput();
     }
 }
