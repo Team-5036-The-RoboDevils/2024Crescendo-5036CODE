@@ -8,10 +8,12 @@ import edu.wpi.first.wpilibj.Timer;
 
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 
 import frc.robot.hardware.*;
 import frc.robot.oi.*;
 import frc.robot.subsystems.*;
+
 
 /**
  * The VM is configured to automatically run this class, and to call the
@@ -24,6 +26,11 @@ import frc.robot.subsystems.*;
  */
 public class Robot extends TimedRobot {
   IShooterHardware shooterHardware;
+  private static final String middleAuto = "Middle"; 
+  private static final String rightAuto = "Right"; 
+  private static final String leftAuto = "Left"; 
+  private String m_autoSelected;
+  private final SendableChooser<String> m_chooser = new SendableChooser<>();
 
   OperatorInterface oi;
   Drivetrain drivetrain;
@@ -36,8 +43,14 @@ public class Robot extends TimedRobot {
    * for any
    * initialization code.
    */
+  /** This function is called periodically during autonomous. */
+
   @Override
   public void robotInit() {
+    m_chooser.setDefaultOption("Middle Auto Position", middleAuto);
+    m_chooser.addOption("Right Auto Position", rightAuto); 
+    m_chooser.addOption("Left Auto Position", leftAuto); 
+    SmartDashboard.putData("Auto choices", m_chooser); 
     shooterHardware = new ShooterHardware();
     intakeHardware = new ArticulatedIntakeHardware();
 
@@ -96,38 +109,89 @@ public class Robot extends TimedRobot {
     double targetDist = 200;
     double currentPos = 0;
     double ConvertedDist = 0;
+    double desiredAngle = 90; 
     
-    // TODO: Implement autonomous modes.
+    if (m_autoSelected == middleAuto) {
+    // Shooter Auto for Middle Placement: Run shooter, score pre-Note
+      shooter.runOpenLoopFront(1);
+      Timer.delay(5); // play around with this
+      shooter.runOpenLoopBack(1);
+      Timer.delay(2); // play around with this
+      shooter.runOpenLoopFront(0); 
+      shooter.runOpenLoopBack(0);
 
-    // Shooter Auto for Middle Placement
-    shooter.runOpenLoopFront(1);
-    Timer.delay(5); // play around with this
-    shooter.runOpenLoopBack(1);
-    Timer.delay(2); // play around with this
-    shooter.runOpenLoopFront(0); 
-    shooter.runOpenLoopBack(0);
-
-    // figure ticks out by pushing a robot a metre and figuring out how many ticks
-
-    // Drive Auto for Middle Placement
-
-     while(drivetrain.getDistTravelled() <= targetDist && isAutonomous()){
-      SmartDashboard.putNumber("Distance covered", ConvertedDist);
-      double forward = -0.3;
-      double rotate = 0;
-      drivetrain.arcadeDrive(forward, rotate);
-      intake.controllerClosedLoopArticulation(0);
-      intake.runOpenLoopIntake(0.4);
-     }
-     double forward = 0;
-     double rotate = 0;
-     drivetrain.arcadeDrive(forward, rotate);
-     
-
+    // Drive Auto for Middle Placement: Run backwards, pick up a note
+      while(drivetrain.getDistTravelled() <= targetDist && isAutonomous()) {
+        SmartDashboard.putNumber("Distance covered", ConvertedDist);
+        double forward = -0.3;
+        double rotate = 0;
+        drivetrain.arcadeDrive(forward, rotate);
+        intake.controllerClosedLoopArticulation(0);
+        intake.runOpenLoopIntake(0.4);
+      } 
+      double forward = 0;
+      double rotate = 0; 
+      while (drivetrain.getDistTravelled() <= -targetDist && isAutonomous()) { // head back toward speaker
+        SmartDashboard.putNumber("Distance covered", ConvertedDist);
+        drivetrain.arcadeDrive(0.3, 0);
+      }
+      forward = 0;
+      rotate = 0; // halt drivetrain in front of speaker
+      drivetrain.arcadeDrive(forward, rotate); // stop moving
+      intake.controllerClosedLoopArticulation(145); //Move arm back to inwards position
+      intake.runOpenLoopIntake(0.0); // stop intake
+      shooter.runOpenLoopBack(1); // run the shooter
+      shooter.runOpenLoopFront(1); 
+      intake.runOpenLoopIntake(-0.6); // run outtake 
+      }
     // Intake Note Auto for Middle Placement
     // Move arm down, start intake, keep intake 
+    
 
-
+    if (m_autoSelected == rightAuto) {
+      while(drivetrain.getDistTravelled() <= targetDist && isAutonomous()) {
+        SmartDashboard.putNumber("Distance covered", ConvertedDist); 
+        double forward = -0.3; 
+        double rotate = 0.0; 
+        drivetrain.arcadeDrive(forward, rotate); 
+      }
+      double forward = 0; 
+      double rotate = 0; 
+      drivetrain.arcadeDrive(forward, rotate);
+      drivetrain.resetGyro(); 
+        while (drivetrain.getAngle() <= 100 && isAutonomous()) {
+          drivetrain.arcadeDrive(0, 0.3);
+        }
+      shooter.runOpenLoopFront(1);
+      Timer.delay(5); // play around with this
+      shooter.runOpenLoopBack(1);
+      Timer.delay(2); // play around with this
+      shooter.runOpenLoopFront(0); 
+      shooter.runOpenLoopBack(0);
+      drivetrain.resetGyro(); 
+        while (drivetrain.getAngle() <= 170 && isAutonomous()) {
+          drivetrain.arcadeDrive(0, -0.3); 
+        }
+      drivetrain.arcadeDrive(0,0); 
+        while (drivetrain.getDistTravelled() <= 150 /* in cm */ && isAutonomous()){
+          drivetrain.arcadeDrive(0.4, 0); 
+          intake.controllerClosedLoopArticulation(0);
+          intake.runOpenLoopIntake(0.6);
+        }
+      drivetrain.arcadeDrive(0, 0); 
+      drivetrain.resetGyro(); 
+        while (drivetrain.getAngle() <= 180 && isAutonomous()) {
+          drivetrain.arcadeDrive(0, 0.3);
+           intake.controllerClosedLoopArticulation(145);
+        }
+      drivetrain.arcadeDrive(0, 0); 
+      shooter.runOpenLoopFront(1); 
+      Timer.delay(5); 
+      shooter.runOpenLoopBack(1);
+      Timer.delay(2); 
+      shooter.runOpenLoopFront(0); 
+      shooter.runOpenLoopBack(0); 
+    }
   }
 
   /** This function is called periodically during autonomous. */

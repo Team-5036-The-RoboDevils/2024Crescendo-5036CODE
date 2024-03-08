@@ -30,7 +30,7 @@ public class Drivetrain {
     }
 
     public double getEncoderPos() {
-        return (hardware.getLeftEncoderPos() + hardware.getRightEncoderPos()) / 2;
+        return (hardware.getLeftEncoderPos() + hardware.getRightEncoderPos()) / 2; // getting the average of the two encoders 
     }
 
     public double getDistTravelled() {
