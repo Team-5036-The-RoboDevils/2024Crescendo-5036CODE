@@ -34,14 +34,14 @@ public class ArticulatedIntake {
         double feedForwardVal = Math.cos(Math.toRadians(currentAngle)) * kFGravity;
 
         if (Math.abs(error) <= ACCEPTABLE_RANGE) {
-            if (currentAngle < EXTREME_VAL_MIN || currentAngle > EXTREME_VAL_MAX) {
+            /*if (currentAngle < EXTREME_VAL_MIN || currentAngle > EXTREME_VAL_MAX) {
                 // We're at the extremes so, no need for power.
                 intake.setArmMotorPower(0);
             } else {
                 // Just pass feed forward value.
                 intake.setArmMotorPower(feedForwardVal);
-            }
-
+            }*/
+            intake.setArmMotorPower(feedForwardVal);
         } else {
             // Run proportional controller + feed forward value
             double output = (error * kP) + feedForwardVal;
