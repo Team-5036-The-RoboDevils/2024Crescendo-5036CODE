@@ -80,4 +80,14 @@ public class OperatorInterface implements IOperatorInterface {
     public double getIntakeManualSpeed() {
         return operatorController.getRawAxis(5);
     }
+
+    @Override
+    public boolean getDebugButton() {
+        return operatorController.getRawButton(3);
+    }
+
+    @Override
+    public boolean getSlowMode() {
+        return drivetrainController.getRawButton(6);
+    }
 }

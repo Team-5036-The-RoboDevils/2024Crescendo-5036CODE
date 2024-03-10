@@ -26,4 +26,8 @@ public interface IOperatorInterface {
     public boolean deployArticulatedIntake();
 
     public double getIntakeManualSpeed();
+
+    public boolean getDebugButton();
+
+    public boolean getSlowMode();
 }

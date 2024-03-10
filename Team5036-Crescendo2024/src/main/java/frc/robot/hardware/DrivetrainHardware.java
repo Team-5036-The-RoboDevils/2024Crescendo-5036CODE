@@ -4,6 +4,7 @@ import frc.robot.RobotMap;
 import edu.wpi.first.wpilibj.SPI;
 import com.kauailabs.navx.frc.AHRS;
 import com.revrobotics.CANSparkMax;
+import com.revrobotics.REVLibError;
 import com.revrobotics.RelativeEncoder;
 import com.revrobotics.CANSparkLowLevel.MotorType;
 
@@ -21,9 +22,11 @@ public class DrivetrainHardware implements IDrivetrainHardware {
         left2 = new CANSparkMax(RobotMap.DRIVE_L2_CAN_ID, MotorType.kBrushless);
         right1 = new CANSparkMax(RobotMap.DRIVE_R1_CAN_ID, MotorType.kBrushless);
         right2 = new CANSparkMax(RobotMap.DRIVE_R2_CAN_ID, MotorType.kBrushless);
-        leftEncoder = left1.getEncoder();
+        leftEncoder = left2.getEncoder();
         rightEncoder = right2.getEncoder();
         gyro = new AHRS(SPI.Port.kMXP);
+        while (gyro.isCalibrating()) {};
+        resetGyro();
     }
 
     @Override
@@ -50,17 +53,23 @@ public class DrivetrainHardware implements IDrivetrainHardware {
 
     @Override
     public void resetEncoderPos() {
-        leftEncoder.setPosition(0.);
-        rightEncoder.setPosition(0.);
+        REVLibError res1 = leftEncoder.setPosition(0.);
+        REVLibError res2 = rightEncoder.setPosition(0.);
+        System.out.println("RESET LEFT RES: " + res1.kOk);
+        System.out.println("RESET RIGHT RES: " + res2.kOk);
     }
 
     @Override
     public void resetGyro() {
-        gyro.reset();
+        //gyro.reset();
+        //gyro.resetDisplacement();
+        //gyro.setAngleAdjustment(-getAngle());
+        gyro.zeroYaw();
     }
 
     @Override
     public double getAngle() {
         return gyro.getAngle();
+        //return gyro.getYaw();
     }
 }
