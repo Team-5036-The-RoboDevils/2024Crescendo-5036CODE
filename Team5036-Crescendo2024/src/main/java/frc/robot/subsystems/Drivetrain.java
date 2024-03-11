@@ -5,9 +5,11 @@ import java.lang.Math;
 
 public class Drivetrain {
     private IDrivetrainHardware hardware; // Make IDrivetrain variable
+    private double offsetAngle;
 
     public Drivetrain(IDrivetrainHardware hardware) {
         this.hardware = hardware; // Create Member Variable
+        offsetAngle = 0;
     }
 
     private double capInput(double val, double min, double max) {
@@ -30,7 +32,7 @@ public class Drivetrain {
     }
 
     public double getEncoderPos() {
-        return (hardware.getLeftEncoderPos() + hardware.getRightEncoderPos()) / 2;
+        return (hardware.getLeftEncoderPos() + hardware.getRightEncoderPos()) / 2; // getting the average of the two encoders 
     }
 
     public double getDistTravelled() {
@@ -40,11 +42,13 @@ public class Drivetrain {
     }
 
     public void resetGyro() {
-        hardware.resetGyro();
+        //hardware.resetGyro();
+        offsetAngle = hardware.getAngle();
     }
 
     public double getAngle() {
-        return hardware.getAngle();
+        //System.out.println("OFFSET: " + offsetAngle);
+        return hardware.getAngle() - offsetAngle;
     }
 
     public double getHeading() {

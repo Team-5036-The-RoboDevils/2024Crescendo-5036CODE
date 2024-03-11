@@ -6,8 +6,8 @@ import edu.wpi.first.wpilibj.Servo;
 public class AmpScorerHardware implements IAmpScorerHardware {
     private Servo ServoShooter;
 
-    public AmpScorerHardware() {
-        ServoShooter = new Servo(RobotMap.AMP_SERVO_PWM);
+    public AmpScorerHardware() { 
+        ServoShooter = new Servo(RobotMap.AMP_SERVO_PWM); // creating an object that implements the interface
 
     }
 
