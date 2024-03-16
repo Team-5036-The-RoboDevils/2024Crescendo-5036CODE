@@ -144,7 +144,6 @@ public class Robot extends TimedRobot {
       shooter.runOpenLoopFront(1);
       shooter.runOpenLoopBack(1);
       Timer.delay(5); // play around with this
-      shooter.runOpenLoopBack(1);
       intake.runOpenLoopIntake(-1);
       Timer.delay(2); // play around with this
       shooter.runOpenLoopFront(0); 
@@ -186,6 +185,7 @@ public class Robot extends TimedRobot {
         drivetrain.arcadeDrive(0.3, 0);
         intake.controllerClosedLoopArticulation(145); //Move arm back to inwards position
         shooter.runOpenLoopFront(1); // Spin up front motor
+        shooter.runOpenLoopBack(1); // Spin up back motor
       }
       System.out.println("MIDDLE AUTO: Drive toward speaker again");
       if (!isInAutoTime(startTime)) return;
@@ -195,7 +195,6 @@ public class Robot extends TimedRobot {
       if (!isInAutoTime(startTime)) return;
 
       // Send shot
-      shooter.runOpenLoopBack(1);
       intake.runOpenLoopIntake(-1); // run outtake 
       Timer.delay(2); // play around with this
       System.out.println("MIDDLE AUTO: SENT SHOT");
@@ -205,8 +204,8 @@ public class Robot extends TimedRobot {
     else if (m_autoSelected == rightAuto) {
       // Shoot
       shooter.runOpenLoopFront(1);
-      Timer.delay(5); // play around with this
       shooter.runOpenLoopBack(1);
+      Timer.delay(5); // play around with this
       intake.runOpenLoopIntake(-1);
       Timer.delay(2); // play around with this
       shooter.runOpenLoopFront(0); 
@@ -262,8 +261,8 @@ public class Robot extends TimedRobot {
     } else if (m_autoSelected == leftAuto) {
       // Shoot
       shooter.runOpenLoopFront(1);
-      Timer.delay(5); // play around with this
       shooter.runOpenLoopBack(1);
+      Timer.delay(5); // play around with this
       intake.runOpenLoopIntake(-1);
       Timer.delay(2); // play around with this
       shooter.runOpenLoopFront(0); 
@@ -331,8 +330,8 @@ public class Robot extends TimedRobot {
     } else if (m_autoSelected == shootPreload) {
       // Shoot
       shooter.runOpenLoopFront(1);
-      Timer.delay(5); // play around with this
       shooter.runOpenLoopBack(1);
+      Timer.delay(5); // play around with this
       intake.runOpenLoopIntake(-1);
       Timer.delay(2); // play around with this
       shooter.runOpenLoopFront(0); 
@@ -355,7 +354,6 @@ public class Robot extends TimedRobot {
       if (!isInAutoTime(startTime)) return;
 
       Timer.delay(5); // play around with this
-      shooter.runOpenLoopBack(1);
       intake.runOpenLoopIntake(-1);
       Timer.delay(2); // play around with this
       shooter.runOpenLoopFront(0); 
@@ -397,6 +395,7 @@ public class Robot extends TimedRobot {
         drivetrain.arcadeDrive(0.3, 0);
         intake.controllerClosedLoopArticulation(145); //Move arm back to inwards position
         shooter.runOpenLoopFront(1); // Spin up front motor
+        shooter.runOpenLoopBack(1);
       }
       System.out.println("MIDDLE AUTO: Drive toward speaker again");
       if (!isInAutoTime(startTime)) return;
@@ -406,7 +405,6 @@ public class Robot extends TimedRobot {
       if (!isInAutoTime(startTime)) return;
 
       // Send shot
-      shooter.runOpenLoopBack(1);
       intake.runOpenLoopIntake(-1); // run outtake 
       Timer.delay(2); // play around with this
       System.out.println("MIDDLE AUTO: SENT SHOT");
@@ -489,7 +487,7 @@ public class Robot extends TimedRobot {
     }
 
     // Back shooter motor
-    if (oi.getShotSpeedButton()) {
+    if (oi.spinUp() || oi.getShotSpeedButton()) {
       shooter.runOpenLoopBack(1.);
     } else if (oi.getHpIntakeSpeedButton()) {
       shooter.setBackMotorRunRpm(750, false);
