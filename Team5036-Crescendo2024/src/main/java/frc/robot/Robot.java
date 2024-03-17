@@ -53,8 +53,8 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-    m_chooser.setDefaultOption("Middle Auto Position - Blue", middleAutoBlue);
-    m_chooser.addOption("Middle Auto Position - Red", middleAutoRed);
+    m_chooser.setDefaultOption("Middle Auto Position - Only run if we fit", middleAutoBlue);
+    //m_chooser.addOption("Middle Auto Position - Red", middleAutoRed); Turning 90 won't work
     m_chooser.addOption("Right Auto Position", rightAuto); 
     m_chooser.addOption("Left Auto Position", leftAuto);
     m_chooser.addOption("Do nothing", nothing);
@@ -100,6 +100,8 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("DEBUG - Encoder distance:", drivetrain.getDistTravelled());
     SmartDashboard.putNumber("DEBUG - Left encoder raw distance:", drivetrainHardware.getLeftEncoderPos());
     SmartDashboard.putNumber("DEBUG - Right encoder raw distance:", drivetrainHardware.getRightEncoderPos());
+    SmartDashboard.putNumber("Speed Dial - Front Shooter Vel: ", shooterHardware.getVelocityFrontEncoder());
+    SmartDashboard.putNumber("Speed Dial - Back Shooter Vel: ", shooterHardware.getVelocityBackEncoder());
 
     if (oi.getDebugButton()) {
       drivetrain.resetEncoders();
@@ -141,8 +143,8 @@ public class Robot extends TimedRobot {
     
     if (m_autoSelected == middleAutoBlue) {
       // Shooter Auto for Middle Placement: Run shooter, score pre-Note
-      shooter.runOpenLoopFront(1);
-      shooter.runOpenLoopBack(1);
+      shooter.runOpenLoopFront(0.95);
+      shooter.runOpenLoopBack(0.95);
       Timer.delay(5); // play around with this
       intake.runOpenLoopIntake(-1);
       Timer.delay(2); // play around with this
@@ -218,7 +220,7 @@ public class Robot extends TimedRobot {
       drivetrain.resetEncoders();
       drivetrain.resetGyro(); 
       Timer.delay(0.1);
-      while(drivetrain.getDistTravelled() <= 200 && isInAutoTime(startTime)) {
+      while(drivetrain.getDistTravelled() <= 140 && isInAutoTime(startTime)) {
         SmartDashboard.putNumber("Distance covered", drivetrain.getDistTravelled()); 
         double forward = -0.3; 
         double rotate = 0.0; 
@@ -250,7 +252,7 @@ public class Robot extends TimedRobot {
       drivetrain.resetEncoders();
       drivetrain.resetGyro(); 
       Timer.delay(0.1);
-      while((drivetrain.getDistTravelled() <= targetDist && isInAutoTime(startTime))) {
+      while((drivetrain.getDistTravelled() <= 140 && isInAutoTime(startTime))) {
         SmartDashboard.putNumber("Distance covered", drivetrain.getDistTravelled()); 
         double forward = -0.3; 
         double rotate = 0.0; 
@@ -274,7 +276,7 @@ public class Robot extends TimedRobot {
       drivetrain.resetEncoders();
       drivetrain.resetGyro(); 
       Timer.delay(0.1);
-      while(drivetrain.getDistTravelled() <= 200 && isInAutoTime(startTime)) {
+      while(drivetrain.getDistTravelled() <= 100 && isInAutoTime(startTime)) {
         //SmartDashboard.putNumber("Distance covered", drivetrain.getDistTravelled() - initialDist); 
         SmartDashboard.putNumber("Distance covered", drivetrain.getDistTravelled()); 
         double forward = -0.3; 
@@ -291,7 +293,7 @@ public class Robot extends TimedRobot {
       // Turn
       drivetrain.resetGyro(); 
       Timer.delay(0.1);
-      while (drivetrain.getAngle() >= -45 && isInAutoTime(startTime)) {
+      while (drivetrain.getAngle() >= -75 && isInAutoTime(startTime)) {
         drivetrain.arcadeDrive(0, -0.3);
       }
       drivetrain.arcadeDrive(0, 0);
@@ -306,7 +308,7 @@ public class Robot extends TimedRobot {
       drivetrain.resetGyro(); 
       Timer.delay(0.1);
       //initialDist = drivetrain.getDistTravelled();
-      while(drivetrain.getDistTravelled() <= 200 && isInAutoTime(startTime)) {
+      while(drivetrain.getDistTravelled() <= 140 && isInAutoTime(startTime)) {
         //SmartDashboard.putNumber("Distance covered", drivetrain.getDistTravelled() - initialDist); 
         double forward = -0.3; 
         double rotate = 0.0; 
