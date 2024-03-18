@@ -29,7 +29,8 @@ public class Robot extends TimedRobot {
   IDrivetrainHardware drivetrainHardware;
   private static final String middleAutoBlue = "MiddleBlue"; 
   private static final String rightAuto = "Right"; 
-  private static final String leftAuto = "Left"; 
+  private static final String leftAutoBlue = "LeftBlue";
+  private static final String leftAutoRed = "LeftRed"; 
   private static final String nothing = "Nothing";
   private static final String backward = "Backwards";
   private static final String shootPreload = "ShootPreload";
@@ -56,7 +57,8 @@ public class Robot extends TimedRobot {
     m_chooser.setDefaultOption("Middle Auto Position - Only run if we fit", middleAutoBlue);
     //m_chooser.addOption("Middle Auto Position - Red", middleAutoRed); Turning 90 won't work
     m_chooser.addOption("Right Auto Position", rightAuto); 
-    m_chooser.addOption("Left Auto Position", leftAuto);
+    m_chooser.addOption("Left Auto Position - Blue", leftAutoBlue);
+    m_chooser.addOption("Left Auto Position - Red", leftAutoRed);
     m_chooser.addOption("Do nothing", nothing);
     m_chooser.addOption("Backwards Auto", backward);
     m_chooser.addOption("Shoot Preload", shootPreload);
@@ -143,8 +145,8 @@ public class Robot extends TimedRobot {
     
     if (m_autoSelected == middleAutoBlue) {
       // Shooter Auto for Middle Placement: Run shooter, score pre-Note
-      shooter.runOpenLoopFront(0.95);
-      shooter.runOpenLoopBack(0.95);
+      shooter.runOpenLoopFront(1);
+      shooter.runOpenLoopBack(1);
       Timer.delay(5); // play around with this
       intake.runOpenLoopIntake(-1);
       Timer.delay(2); // play around with this
@@ -260,7 +262,7 @@ public class Robot extends TimedRobot {
       }    
       drivetrain.arcadeDrive(0, 0);
       System.out.println("RIGHT AUTO: DROVE BACK AGAIN");
-    } else if (m_autoSelected == leftAuto) {
+    } else if (m_autoSelected == leftAutoBlue || m_autoSelected == leftAutoRed) {
       // Shoot
       shooter.runOpenLoopFront(1);
       shooter.runOpenLoopBack(1);
@@ -273,18 +275,20 @@ public class Robot extends TimedRobot {
       if (!isInAutoTime(startTime)) return;
 
       // Drive a bit back
-      drivetrain.resetEncoders();
-      drivetrain.resetGyro(); 
-      Timer.delay(0.1);
-      while(drivetrain.getDistTravelled() <= 100 && isInAutoTime(startTime)) {
-        //SmartDashboard.putNumber("Distance covered", drivetrain.getDistTravelled() - initialDist); 
-        SmartDashboard.putNumber("Distance covered", drivetrain.getDistTravelled()); 
-        double forward = -0.3; 
-        double rotate = 0.0; 
-        drivetrain.arcadeDrive(forward, rotate); 
+      if (m_autoSelected == leftAutoBlue) {
+        drivetrain.resetEncoders();
+        drivetrain.resetGyro(); 
+        Timer.delay(0.1);
+        while(drivetrain.getDistTravelled() <= 100 && isInAutoTime(startTime)) {
+          //SmartDashboard.putNumber("Distance covered", drivetrain.getDistTravelled() - initialDist); 
+          SmartDashboard.putNumber("Distance covered", drivetrain.getDistTravelled()); 
+          double forward = -0.3; 
+          double rotate = 0.0; 
+          drivetrain.arcadeDrive(forward, rotate); 
+        }
+        drivetrain.arcadeDrive(0, 0);
+        if (!isInAutoTime(startTime)) return;
       }
-      drivetrain.arcadeDrive(0, 0);
-      if (!isInAutoTime(startTime)) return;
       
       // Stop
       drivetrain.arcadeDrive(0, 0);
@@ -293,7 +297,7 @@ public class Robot extends TimedRobot {
       // Turn
       drivetrain.resetGyro(); 
       Timer.delay(0.1);
-      while (drivetrain.getAngle() >= -75 && isInAutoTime(startTime)) {
+      while (drivetrain.getAngle() >= -60 && isInAutoTime(startTime)) {
         drivetrain.arcadeDrive(0, -0.3);
       }
       drivetrain.arcadeDrive(0, 0);
