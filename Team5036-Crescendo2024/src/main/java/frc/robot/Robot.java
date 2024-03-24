@@ -9,7 +9,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
-
+import frc.robot.autonomous.ScorePreNote;
 import frc.robot.hardware.*;
 import frc.robot.oi.*;
 import frc.robot.subsystems.*;
@@ -34,7 +34,6 @@ public class Robot extends TimedRobot {
   private static final String nothing = "Nothing";
   private static final String backward = "Backwards";
   private static final String shootPreload = "ShootPreload";
-  private static final String middleAutoRed = "MiddleRed"; 
 
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
@@ -145,14 +144,7 @@ public class Robot extends TimedRobot {
     
     if (m_autoSelected == middleAutoBlue) {
       // Shooter Auto for Middle Placement: Run shooter, score pre-Note
-      shooter.runOpenLoopFront(1);
-      shooter.runOpenLoopBack(1);
-      Timer.delay(5); // play around with this
-      intake.runOpenLoopIntake(-1);
-      Timer.delay(2); // play around with this
-      shooter.runOpenLoopFront(0); 
-      shooter.runOpenLoopBack(0);
-      intake.runOpenLoopIntake(0);
+      ScorePreNote.execute(shooter, intake, true, true);
       System.out.println("MIDDLE AUTO: Shot pre-load");
       if (!isInAutoTime(startTime)) return;
 
@@ -207,14 +199,7 @@ public class Robot extends TimedRobot {
     
     else if (m_autoSelected == rightAuto) {
       // Shoot
-      shooter.runOpenLoopFront(1);
-      shooter.runOpenLoopBack(1);
-      Timer.delay(5); // play around with this
-      intake.runOpenLoopIntake(-1);
-      Timer.delay(2); // play around with this
-      shooter.runOpenLoopFront(0); 
-      shooter.runOpenLoopBack(0);
-      intake.runOpenLoopIntake(0);
+      ScorePreNote.execute(shooter, intake, true, true); 
       System.out.println("RIGHT AUTO: SENT SHOT");
       if (!isInAutoTime(startTime)) return;
 
@@ -264,14 +249,7 @@ public class Robot extends TimedRobot {
       System.out.println("RIGHT AUTO: DROVE BACK AGAIN");
     } else if (m_autoSelected == leftAutoBlue || m_autoSelected == leftAutoRed) {
       // Shoot
-      shooter.runOpenLoopFront(1);
-      shooter.runOpenLoopBack(1);
-      Timer.delay(5); // play around with this
-      intake.runOpenLoopIntake(-1);
-      Timer.delay(2); // play around with this
-      shooter.runOpenLoopFront(0); 
-      shooter.runOpenLoopBack(0);
-      intake.runOpenLoopIntake(0);
+      ScorePreNote.execute(shooter, intake, true, true); 
       if (!isInAutoTime(startTime)) return;
 
       // Drive a bit back
@@ -335,94 +313,10 @@ public class Robot extends TimedRobot {
       drivetrain.arcadeDrive(0, 0);
     } else if (m_autoSelected == shootPreload) {
       // Shoot
-      shooter.runOpenLoopFront(1);
-      shooter.runOpenLoopBack(1);
-      Timer.delay(5); // play around with this
-      intake.runOpenLoopIntake(-1);
-      Timer.delay(2); // play around with this
-      shooter.runOpenLoopFront(0); 
-      shooter.runOpenLoopBack(0);
-      intake.runOpenLoopIntake(0);
+      ScorePreNote.execute(shooter, intake, true, true);
       System.out.println("PRELOAD AUTO: SENT SHOT");
       if (!isInAutoTime(startTime)) return;
-    } else if (m_autoSelected == middleAutoRed) {
-      // Shooter Auto for Middle Placement: Run shooter, turn 90, score pre-Note
-      shooter.runOpenLoopFront(1);
-      shooter.runOpenLoopBack(1);
-
-      // Turn
-      drivetrain.resetGyro(); 
-      Timer.delay(0.1);
-      while (drivetrain.getAngle() >= -90 && isInAutoTime(startTime)) {
-        drivetrain.arcadeDrive(0, -0.3);
-      }
-      drivetrain.arcadeDrive(0, 0);
-      if (!isInAutoTime(startTime)) return;
-
-      Timer.delay(5); // play around with this
-      intake.runOpenLoopIntake(-1);
-      Timer.delay(2); // play around with this
-      shooter.runOpenLoopFront(0); 
-      shooter.runOpenLoopBack(0);
-      intake.runOpenLoopIntake(0);
-      System.out.println("MIDDLE AUTO: Shot pre-load");
-      if (!isInAutoTime(startTime)) return;
-
-      // Drive Auto for Middle Placement: Run backwards, pick up a note
-      drivetrain.resetEncoders();
-      drivetrain.resetGyro(); 
-      Timer.delay(0.1);
-      //double initialDist = drivetrain.getDistTravelled();
-      while(drivetrain.getDistTravelled() <= targetDist && isInAutoTime(startTime)) {
-        SmartDashboard.putNumber("Distance covered", drivetrain.getDistTravelled());
-        double forward = -0.1;
-        double rotate = 0;
-        drivetrain.arcadeDrive(forward, rotate);
-        intake.controllerClosedLoopArticulation(-23);
-        intake.runOpenLoopIntake(1);
-      }
-      System.out.println("MIDDLE AUTO: Drove back");
-      if (!isInAutoTime(startTime)) return;
-      
-      // Stop drivetrain, intake and shooter
-      drivetrain.arcadeDrive(0, 0);
-      intake.runOpenLoopIntake(0);
-      shooter.runOpenLoopBack(0);
-      shooter.runOpenLoopFront(0);
-      if (!isInAutoTime(startTime)) return;
-      
-      // Drive toward speaker again
-      drivetrain.resetEncoders();
-      drivetrain.resetGyro(); 
-      Timer.delay(0.1);
-      //initialDist = drivetrain.getDistTravelled();
-      while (drivetrain.getDistTravelled() >= -targetDist && isInAutoTime(startTime)) { // head back toward speaker
-        SmartDashboard.putNumber("Distance covered", drivetrain.getDistTravelled());
-        drivetrain.arcadeDrive(0.3, 0);
-        intake.controllerClosedLoopArticulation(145); //Move arm back to inwards position
-        shooter.runOpenLoopFront(1); // Spin up front motor
-        shooter.runOpenLoopBack(1);
-      }
-      System.out.println("MIDDLE AUTO: Drive toward speaker again");
-      if (!isInAutoTime(startTime)) return;
-
-      // Stop drivetrain
-      drivetrain.arcadeDrive(0, 0);
-      if (!isInAutoTime(startTime)) return;
-
-      // Send shot
-      intake.runOpenLoopIntake(-1); // run outtake 
-      Timer.delay(2); // play around with this
-      System.out.println("MIDDLE AUTO: SENT SHOT");
-      if (!isInAutoTime(startTime)) return;
- 
     }
-
-    drivetrain.arcadeDrive(0, 0);
-    intake.runOpenLoopIntake(0);
-    intake.controllerOpenLoopArticulation(0);
-    shooter.runOpenLoopFront(0);
-    shooter.runOpenLoopBack(0);
   }
 
   /** This function is called periodically during autonomous. */
