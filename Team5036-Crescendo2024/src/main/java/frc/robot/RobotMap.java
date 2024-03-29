@@ -10,4 +10,5 @@ public class RobotMap {
     public static final int INTAKEROLLER_M1_CAN_ID = 11; 
     public static final int INTAKEROLLER_M2_CAN_ID = 13; 
     public static final int AMP_SERVO_PWM = 0;
+    public static final int CLIMBER_CAN_ID = 14;
 }

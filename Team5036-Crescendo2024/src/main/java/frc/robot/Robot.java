@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
+import frc.robot.autonomous.DriveStraight;
 import frc.robot.autonomous.ScorePreNote;
 import frc.robot.hardware.*;
 import frc.robot.oi.*;
@@ -153,14 +154,11 @@ public class Robot extends TimedRobot {
       drivetrain.resetGyro(); 
       Timer.delay(0.1);
       //double initialDist = drivetrain.getDistTravelled();
-      while(drivetrain.getDistTravelled() <= targetDist && isInAutoTime(startTime)) {
+        DriveStraight.execute(drivetrain, 200, false, -0.1, startTime);
         SmartDashboard.putNumber("Distance covered", drivetrain.getDistTravelled());
-        double forward = -0.1;
-        double rotate = 0;
-        drivetrain.arcadeDrive(forward, rotate);
         intake.controllerClosedLoopArticulation(-23);
         intake.runOpenLoopIntake(1);
-      }
+
       System.out.println("MIDDLE AUTO: Drove back");
       if (!isInAutoTime(startTime)) return;
       
@@ -176,13 +174,12 @@ public class Robot extends TimedRobot {
       drivetrain.resetGyro(); 
       Timer.delay(0.1);
       //initialDist = drivetrain.getDistTravelled();
-      while (drivetrain.getDistTravelled() >= -targetDist && isInAutoTime(startTime)) { // head back toward speaker
+        DriveStraight.execute(drivetrain, 200, true, 0.3, startTime);
         SmartDashboard.putNumber("Distance covered", drivetrain.getDistTravelled());
-        drivetrain.arcadeDrive(0.3, 0);
         intake.controllerClosedLoopArticulation(145); //Move arm back to inwards position
         shooter.runOpenLoopFront(1); // Spin up front motor
         shooter.runOpenLoopBack(1); // Spin up back motor
-      }
+
       System.out.println("MIDDLE AUTO: Drive toward speaker again");
       if (!isInAutoTime(startTime)) return;
 
@@ -207,18 +204,12 @@ public class Robot extends TimedRobot {
       drivetrain.resetEncoders();
       drivetrain.resetGyro(); 
       Timer.delay(0.1);
-      while(drivetrain.getDistTravelled() <= 140 && isInAutoTime(startTime)) {
-        SmartDashboard.putNumber("Distance covered", drivetrain.getDistTravelled()); 
-        double forward = -0.3; 
-        double rotate = 0.0; 
-        drivetrain.arcadeDrive(forward, rotate); 
-      }
+      DriveStraight.execute(drivetrain, 140, false, -0.3, startTime);
       System.out.println("RIGHT AUTO: DROVE BACK AGAIN");
-      drivetrain.arcadeDrive(0, 0);
+      
       if (!isInAutoTime(startTime)) return;
       
       // Stop
-      drivetrain.arcadeDrive(0, 0);
       if (!isInAutoTime(startTime)) return;
      
       // Turn
@@ -239,14 +230,9 @@ public class Robot extends TimedRobot {
       drivetrain.resetEncoders();
       drivetrain.resetGyro(); 
       Timer.delay(0.1);
-      while((drivetrain.getDistTravelled() <= 140 && isInAutoTime(startTime))) {
-        SmartDashboard.putNumber("Distance covered", drivetrain.getDistTravelled()); 
-        double forward = -0.3; 
-        double rotate = 0.0; 
-        drivetrain.arcadeDrive(forward, rotate); 
-      }    
-      drivetrain.arcadeDrive(0, 0);
+      DriveStraight.execute(drivetrain, 140, false, -0.3, startTime); 
       System.out.println("RIGHT AUTO: DROVE BACK AGAIN");
+
     } else if (m_autoSelected == leftAutoBlue || m_autoSelected == leftAutoRed) {
       // Shoot
       ScorePreNote.execute(shooter, intake, true, true); 
@@ -257,14 +243,7 @@ public class Robot extends TimedRobot {
         drivetrain.resetEncoders();
         drivetrain.resetGyro(); 
         Timer.delay(0.1);
-        while(drivetrain.getDistTravelled() <= 100 && isInAutoTime(startTime)) {
-          //SmartDashboard.putNumber("Distance covered", drivetrain.getDistTravelled() - initialDist); 
-          SmartDashboard.putNumber("Distance covered", drivetrain.getDistTravelled()); 
-          double forward = -0.3; 
-          double rotate = 0.0; 
-          drivetrain.arcadeDrive(forward, rotate); 
-        }
-        drivetrain.arcadeDrive(0, 0);
+        DriveStraight.execute(drivetrain, 100, false, -0.3, startTime);
         if (!isInAutoTime(startTime)) return;
       }
       
@@ -290,13 +269,7 @@ public class Robot extends TimedRobot {
       drivetrain.resetGyro(); 
       Timer.delay(0.1);
       //initialDist = drivetrain.getDistTravelled();
-      while(drivetrain.getDistTravelled() <= 140 && isInAutoTime(startTime)) {
-        //SmartDashboard.putNumber("Distance covered", drivetrain.getDistTravelled() - initialDist); 
-        double forward = -0.3; 
-        double rotate = 0.0; 
-        drivetrain.arcadeDrive(forward, rotate); 
-      }
-      drivetrain.arcadeDrive(0, 0);
+      DriveStraight.execute(drivetrain, 140, false, -0.3, startTime);
     } else if (m_autoSelected == nothing) {
 
     } else if (m_autoSelected == backward) {
@@ -304,13 +277,7 @@ public class Robot extends TimedRobot {
       drivetrain.resetEncoders();
       drivetrain.resetGyro(); 
       Timer.delay(0.1);
-      while(drivetrain.getDistTravelled() <= 300 && isInAutoTime(startTime)) {
-        SmartDashboard.putNumber("Distance covered", drivetrain.getDistTravelled()); 
-        double forward = -0.3; 
-        double rotate = 0.0; 
-        drivetrain.arcadeDrive(forward, rotate); 
-      }
-      drivetrain.arcadeDrive(0, 0);
+      DriveStraight.execute(drivetrain, 300, false, -0.3, startTime);
     } else if (m_autoSelected == shootPreload) {
       // Shoot
       ScorePreNote.execute(shooter, intake, true, true);
