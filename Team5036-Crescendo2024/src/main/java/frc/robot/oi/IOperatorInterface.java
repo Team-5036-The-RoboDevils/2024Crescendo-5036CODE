@@ -21,7 +21,7 @@ public interface IOperatorInterface {
 
     public double getArticulatedIntakeOpenLoopAxis();
 
-    public double getArticulatedIntakePIDTuningAxis(double a, double b);
+    public double getArticulatedIntakePIDTuningAxis();
 
     public boolean deployArticulatedIntake();
 
@@ -30,4 +30,8 @@ public interface IOperatorInterface {
     public boolean getDebugButton();
 
     public boolean getSlowMode();
+
+    public boolean getClimbButton();
+
+    public boolean getClimbUnwindButton();
 }

@@ -5,11 +5,12 @@
 package frc.robot;
 
 import edu.wpi.first.wpilibj.Timer;
-
+import edu.wpi.first.cameraserver.CameraServer;
 import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.autonomous.DriveStraight;
+import frc.robot.autonomous.PIDTurn;
 import frc.robot.autonomous.ScorePreNote;
 import frc.robot.hardware.*;
 import frc.robot.oi.*;
@@ -28,6 +29,10 @@ import frc.robot.subsystems.*;
 public class Robot extends TimedRobot {
   IShooterHardware shooterHardware;
   IDrivetrainHardware drivetrainHardware;
+  IArticulatedIntakeHardware intakeHardware;
+  IClimberHardware climberHardware;
+
+
   private static final String middleAutoBlue = "MiddleBlue"; 
   private static final String rightAuto = "Right"; 
   private static final String leftAutoBlue = "LeftBlue";
@@ -43,8 +48,8 @@ public class Robot extends TimedRobot {
   Drivetrain drivetrain;
   Shooter shooter;
   ArticulatedIntake intake;
+  Climber climber;
 
-  IArticulatedIntakeHardware intakeHardware;
   /**
    * This function is run when the robot is first started up and should be used
    * for any
@@ -66,16 +71,20 @@ public class Robot extends TimedRobot {
     shooterHardware = new ShooterHardware();
     intakeHardware = new ArticulatedIntakeHardware();
     drivetrainHardware = new DrivetrainHardware();
+    climberHardware = new ClimberHardware();
 
     oi = new OperatorInterface();
     drivetrain = new Drivetrain(drivetrainHardware);
     shooter = new Shooter(shooterHardware);
     intake = new ArticulatedIntake(intakeHardware);
+    climber = new Climber(climberHardware);
 
     intakeHardware.resetArmEncoder();
 
     drivetrain.resetEncoders();
     drivetrain.resetGyro();
+
+    CameraServer.startAutomaticCapture();
   }
 
   /**
@@ -105,9 +114,11 @@ public class Robot extends TimedRobot {
     SmartDashboard.putNumber("Speed Dial - Front Shooter Vel: ", shooterHardware.getVelocityFrontEncoder());
     SmartDashboard.putNumber("Speed Dial - Back Shooter Vel: ", shooterHardware.getVelocityBackEncoder());
 
+    SmartDashboard.putNumber("TUNING CONTROLLER: ", oi.getArticulatedIntakePIDTuningAxis());
+
     if (oi.getDebugButton()) {
-      drivetrain.resetEncoders();
-      drivetrain.resetGyro();
+      //drivetrain.resetEncoders();
+      //drivetrain.resetGyro();
     }
   }
 
@@ -378,11 +389,21 @@ public class Robot extends TimedRobot {
       intake.runOpenLoopIntake(1);
     } else {
       intake.runOpenLoopIntake(0);
-    }    
+    }
+    
+    if (oi.getClimbButton()) {
+      climber.retract();
+      //System.out.println("DEBUG - RETRACTING");
+    } else if (oi.getClimbUnwindButton()) {
+      climber.unwind();
+    } else {
+      climber.stop();
+    }
 
     if (oi.getDebugButton()) {
-      drivetrain.resetEncoders();
-      drivetrain.resetGyro();
+      //drivetrain.resetEncoders();
+      //drivetrain.resetGyro();
+      PIDTurn.execute(System.currentTimeMillis(), drivetrain, shooter, intake, 90, 0.5, 0, 145, oi.getArticulatedIntakePIDTuningAxis());
     }
   }
   

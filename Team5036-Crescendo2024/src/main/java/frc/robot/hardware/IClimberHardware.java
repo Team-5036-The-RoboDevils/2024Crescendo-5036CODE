@@ -4,5 +4,5 @@ public interface IClimberHardware {
     
     public void setClimberMotorPower(double val);
 
-    public void resetClimberEncoder();
+    //public void resetClimberEncoder();
 }

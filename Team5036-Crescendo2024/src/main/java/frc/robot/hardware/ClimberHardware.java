@@ -2,24 +2,24 @@ package frc.robot.hardware;
 
 
 import frc.robot.RobotMap;
-import com.revrobotics.CANSparkMax;
-import com.revrobotics.CANSparkMaxLowLevel;
-import com.revrobotics.RelativeEncoder;
-import com.revrobotics.CANSparkLowLevel.MotorType;
+
+import com.ctre.phoenix.motorcontrol.VictorSPXControlMode;
+import com.ctre.phoenix.motorcontrol.can.VictorSPX;
+
 public class ClimberHardware implements IClimberHardware {
-    private CANSparkMax Climber;
-    private RelativeEncoder ClimberEncoder;
+    private VictorSPX climber;
+    //private RelativeEncoder ClimberEncoder;
 
     public ClimberHardware(){
-        Climber = new CANSparkMax(RobotMap.CLIMBER_CAN_ID, MotorType.kBrushless);
+        climber = new VictorSPX(RobotMap.CLIMBER_CAN_ID);
        // RelativeEncoder = new Climber.getEncoder();
     }
 
     public void setClimberMotorPower(double val){
-        Climber.set(val);
+        climber.set(VictorSPXControlMode.PercentOutput, val);
     }
 
-    public void resetClimberEncoder(){
+    /*public void resetClimberEncoder(){
         //Climber.();
-    }
+    }*/
 }
