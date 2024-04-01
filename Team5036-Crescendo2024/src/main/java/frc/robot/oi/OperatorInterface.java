@@ -70,8 +70,8 @@ public class OperatorInterface implements IOperatorInterface {
 
     @Override
     public double getArticulatedIntakePIDTuningAxis(){
-        double a = 0.02;
-        double b = 0.05;
+        double a = 0.175;
+        double b = 0.21;
         return ((-tuningController.getRawAxis(1) + 1) / 2) * (b - a) + a;
         // Only reimplement if we need to tune something again.
         //return 0;

@@ -9,7 +9,7 @@ public class PIDTurn extends AutonAction {
     private static final double EPSILON_RANGE = 5;
     private static final int IN_RANGE_COUNT_REQ = 10;
     
-    public static void execute(double autonStartTime, Drivetrain drivetrain, Shooter shooter, ArticulatedIntake intake, double desiredAngle, double maxPower, double shooterSpeed, double intakeAngle, double tempParam) {
+    public static void execute(double autonStartTime, Drivetrain drivetrain, Shooter shooter, ArticulatedIntake intake, double desiredAngle, double maxPower, double shooterSpeed, double intakeAngle) {
         int inRangeCount = 0;
         
         drivetrain.resetGyro(); 

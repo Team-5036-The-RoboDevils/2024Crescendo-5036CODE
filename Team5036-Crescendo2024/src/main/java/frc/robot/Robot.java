@@ -10,6 +10,8 @@ import edu.wpi.first.wpilibj.TimedRobot;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import frc.robot.autonomous.DriveStraight;
+import frc.robot.autonomous.MoveArm;
+import frc.robot.autonomous.PIDDriveStraight;
 import frc.robot.autonomous.PIDTurn;
 import frc.robot.autonomous.ScorePreNote;
 import frc.robot.hardware.*;
@@ -40,6 +42,7 @@ public class Robot extends TimedRobot {
   private static final String nothing = "Nothing";
   private static final String backward = "Backwards";
   private static final String shootPreload = "ShootPreload";
+  private static final String middleAutoPidBlue = "MiddleBluePidBlue";
 
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
@@ -67,6 +70,7 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("Do nothing", nothing);
     m_chooser.addOption("Backwards Auto", backward);
     m_chooser.addOption("Shoot Preload", shootPreload);
+    m_chooser.addOption("Middle Auto PID - Blue", middleAutoPidBlue);
     SmartDashboard.putData("Auto choices", m_chooser);
     shooterHardware = new ShooterHardware();
     intakeHardware = new ArticulatedIntakeHardware();
@@ -156,7 +160,7 @@ public class Robot extends TimedRobot {
     
     if (m_autoSelected == middleAutoBlue) {
       // Shooter Auto for Middle Placement: Run shooter, score pre-Note
-      ScorePreNote.execute(shooter, intake, true, true);
+      ScorePreNote.execute(shooter, intake, true, true, 5);
       System.out.println("MIDDLE AUTO: Shot pre-load");
       if (!isInAutoTime(startTime)) return;
 
@@ -207,7 +211,7 @@ public class Robot extends TimedRobot {
     
     else if (m_autoSelected == rightAuto) {
       // Shoot
-      ScorePreNote.execute(shooter, intake, true, true); 
+      ScorePreNote.execute(shooter, intake, true, true, 5); 
       System.out.println("RIGHT AUTO: SENT SHOT");
       if (!isInAutoTime(startTime)) return;
 
@@ -246,7 +250,7 @@ public class Robot extends TimedRobot {
 
     } else if (m_autoSelected == leftAutoBlue || m_autoSelected == leftAutoRed) {
       // Shoot
-      ScorePreNote.execute(shooter, intake, true, true); 
+      ScorePreNote.execute(shooter, intake, true, true, 5); 
       if (!isInAutoTime(startTime)) return;
 
       // Drive a bit back
@@ -291,9 +295,36 @@ public class Robot extends TimedRobot {
       DriveStraight.execute(drivetrain, 300, false, -0.3, startTime);
     } else if (m_autoSelected == shootPreload) {
       // Shoot
-      ScorePreNote.execute(shooter, intake, true, true);
+      ScorePreNote.execute(shooter, intake, true, true, 5);
       System.out.println("PRELOAD AUTO: SENT SHOT");
       if (!isInAutoTime(startTime)) return;
+    } else if (m_autoSelected == middleAutoPidBlue) {
+      PIDDriveStraight.execute(startTime, drivetrain, shooter, intake, 20, 0.1, 1., 145., 0.);
+      ScorePreNote.execute(shooter, intake, false, true, 2.75, 0.5);
+      
+      // Spin up shooter and shoot
+      //long SPIN_UP_TIME = 2000;
+      //long startOfSpinningUpShooter = System.currentTimeMillis();
+      //while((shooterHardware.getVelocityFrontEncoder() < 5700 || shooterHardware.getVelocityBackEncoder() < 5700) &&  System.currentTimeMillis() - startOfSpinningUpShooter <= SPIN_UP_TIME) {}
+      //ScorePreNote.execute(shooter, intake, false, true, 1.5);
+
+      // Pick up 2nd note
+      MoveArm.execute(startTime, intake, shooter, -8, 1, 1);
+      PIDDriveStraight.execute(startTime, drivetrain, shooter, intake, 100, 0.15, 1., -20., 1.);
+
+      // Shoot 2nd note
+      //MoveArm.execute(startTime, intake, shooter, 90, 1., 0.);
+      PIDDriveStraight.execute(startTime, drivetrain, shooter, intake, -90, 0.7, 1., 145, 0.);
+      ScorePreNote.execute(shooter, intake, false, true, 0.1, 0.5);
+
+      // Pick up 3rd note
+      PIDTurn.execute(startTime, drivetrain, shooter, intake, 53, 0.4, 1., 10.);
+      PIDDriveStraight.execute(startTime, drivetrain, shooter, intake, 160, 0.15, 1., -15., 1.);
+      PIDDriveStraight.execute(startTime, drivetrain, shooter, intake, -115, 0.9, 1., 145, 0.);
+
+      // Score 3rd note
+      ScorePreNote.execute(shooter, intake, false, true, 0.1, 0.5);
+      //PIDDriveStraight.execute(startTime, drivetrain, shooter, intake, 80, 0.2, 1., 0., 1.);
     }
   }
 
@@ -403,7 +434,8 @@ public class Robot extends TimedRobot {
     if (oi.getDebugButton()) {
       //drivetrain.resetEncoders();
       //drivetrain.resetGyro();
-      PIDTurn.execute(System.currentTimeMillis(), drivetrain, shooter, intake, 90, 0.5, 0, 145, oi.getArticulatedIntakePIDTuningAxis());
+      //PIDTurn.execute(System.currentTimeMillis(), drivetrain, shooter, intake, -40, 0.5, 0, 145);
+      PIDDriveStraight.execute(System.currentTimeMillis(), drivetrain, shooter, intake, -300, 0.3, 0, 145., 0);
     }
   }
   

@@ -23,12 +23,12 @@ public class PIDController {
   }
   public double capOutput(double val) {
     // caps the output value by using if else loops
-    return val>=outputMax?outputMax:val<outputMin?outputMin:val;
+    return val >= outputMax ? outputMax : val<outputMin ? outputMin : val;
   }
   public void updateError(double currentSensorReading) {
     // updating the error
     lastError = currentError;
     currentError = target - currentSensorReading;
-    errorSum += Math.abs(currentError)<integralRange?currentError:0;
+    errorSum += Math.abs(currentError) < integralRange ? currentError : 0;
   }
 }
