@@ -44,8 +44,16 @@ public class Robot extends TimedRobot {
   private static final String shootPreload = "ShootPreload";
   private static final String middleAutoPidBlue = "MiddleBluePidBlue";
 
+  private static final String NO_SKIP = "noSkip";
+  private static final String STOP_AFTER_1ST = "stop1st";
+  private static final String STOP_AFTER_2ND = "stop2nd";
+
+  private static final double UNDEPLOYED_ANGLE = 152;
+
   private String m_autoSelected;
   private final SendableChooser<String> m_chooser = new SendableChooser<>();
+  private final SendableChooser<String> middleNodeAutoChooser = new SendableChooser<>();
+
 
   OperatorInterface oi;
   Drivetrain drivetrain;
@@ -62,7 +70,7 @@ public class Robot extends TimedRobot {
 
   @Override
   public void robotInit() {
-    m_chooser.setDefaultOption("Middle Auto Position - Only run if we fit", middleAutoBlue);
+    m_chooser.setDefaultOption("Middle Auto - Old one - Probably don't use this without asking first", middleAutoBlue);
     //m_chooser.addOption("Middle Auto Position - Red", middleAutoRed); Turning 90 won't work
     m_chooser.addOption("Right Auto Position", rightAuto); 
     m_chooser.addOption("Left Auto Position - Blue", leftAutoBlue);
@@ -70,8 +78,14 @@ public class Robot extends TimedRobot {
     m_chooser.addOption("Do nothing", nothing);
     m_chooser.addOption("Backwards Auto", backward);
     m_chooser.addOption("Shoot Preload", shootPreload);
-    m_chooser.addOption("Middle Auto PID - Blue", middleAutoPidBlue);
+    m_chooser.addOption("Middle Auto - 3 Note Attempt - PIDs", middleAutoPidBlue);
     SmartDashboard.putData("Auto choices", m_chooser);
+
+    middleNodeAutoChooser.setDefaultOption("Attempt all 3", NO_SKIP);
+    middleNodeAutoChooser.addOption("Skip after 1st note", STOP_AFTER_1ST);
+    middleNodeAutoChooser.addOption("Skip after 2nd note", STOP_AFTER_2ND);
+    SmartDashboard.putData("Middle Auto choices: ", middleNodeAutoChooser);
+
     shooterHardware = new ShooterHardware();
     intakeHardware = new ArticulatedIntakeHardware();
     drivetrainHardware = new DrivetrainHardware();
@@ -189,11 +203,11 @@ public class Robot extends TimedRobot {
       drivetrain.resetGyro(); 
       Timer.delay(0.1);
       //initialDist = drivetrain.getDistTravelled();
-        DriveStraight.execute(drivetrain, 200, true, 0.3, startTime);
-        SmartDashboard.putNumber("Distance covered", drivetrain.getDistTravelled());
-        intake.controllerClosedLoopArticulation(145); //Move arm back to inwards position
-        shooter.runOpenLoopFront(1); // Spin up front motor
-        shooter.runOpenLoopBack(1); // Spin up back motor
+      DriveStraight.execute(drivetrain, 200, true, 0.3, startTime);
+      SmartDashboard.putNumber("Distance covered", drivetrain.getDistTravelled());
+      intake.controllerClosedLoopArticulation(UNDEPLOYED_ANGLE); //Move arm back to inwards position
+      shooter.runOpenLoopFront(1); // Spin up front motor
+      shooter.runOpenLoopBack(1); // Spin up back motor
 
       System.out.println("MIDDLE AUTO: Drive toward speaker again");
       if (!isInAutoTime(startTime)) return;
@@ -216,11 +230,13 @@ public class Robot extends TimedRobot {
       if (!isInAutoTime(startTime)) return;
 
       // Drive a bit back
+      /*
       drivetrain.resetEncoders();
       drivetrain.resetGyro(); 
       Timer.delay(0.1);
       DriveStraight.execute(drivetrain, 140, false, -0.3, startTime);
       System.out.println("RIGHT AUTO: DROVE BACK AGAIN");
+      */
       
       if (!isInAutoTime(startTime)) return;
       
@@ -251,22 +267,23 @@ public class Robot extends TimedRobot {
     } else if (m_autoSelected == leftAutoBlue || m_autoSelected == leftAutoRed) {
       // Shoot
       ScorePreNote.execute(shooter, intake, true, true, 5); 
-      if (!isInAutoTime(startTime)) return;
 
       // Drive a bit back
       if (m_autoSelected == leftAutoBlue) {
-        drivetrain.resetEncoders();
+        /*drivetrain.resetEncoders();
         drivetrain.resetGyro(); 
         Timer.delay(0.1);
-        DriveStraight.execute(drivetrain, 100, false, -0.3, startTime);
-        if (!isInAutoTime(startTime)) return;
+        DriveStraight.execute(drivetrain, 100, false, -0.3, startTime);*/
+        PIDDriveStraight.execute(startTime, drivetrain, shooter, intake, 100, 0.7, 0, UNDEPLOYED_ANGLE, 0);
       }
       
       // Stop
-      drivetrain.arcadeDrive(0, 0);
-      if (!isInAutoTime(startTime)) return;
+      //drivetrain.arcadeDrive(0, 0);
+      //if (!isInAutoTime(startTime)) return;
       
       // Turn
+      PIDTurn.execute(startTime, drivetrain, shooter, intake, -60, 0.4, 0., UNDEPLOYED_ANGLE);
+      /*
       drivetrain.resetGyro(); 
       Timer.delay(0.1);
       while (drivetrain.getAngle() >= -60 && isInAutoTime(startTime)) {
@@ -278,13 +295,17 @@ public class Robot extends TimedRobot {
       // Stop
       drivetrain.arcadeDrive(0, 0);
       if (!isInAutoTime(startTime)) return;
+      */
 
       // Drive a bit back
+      PIDDriveStraight.execute(startTime, drivetrain, shooter, intake, 140, 0.7, 0, UNDEPLOYED_ANGLE, 0);
+      /*
       drivetrain.resetEncoders();
       drivetrain.resetGyro(); 
       Timer.delay(0.1);
       //initialDist = drivetrain.getDistTravelled();
       DriveStraight.execute(drivetrain, 140, false, -0.3, startTime);
+      */
     } else if (m_autoSelected == nothing) {
 
     } else if (m_autoSelected == backward) {
@@ -299,9 +320,12 @@ public class Robot extends TimedRobot {
       System.out.println("PRELOAD AUTO: SENT SHOT");
       if (!isInAutoTime(startTime)) return;
     } else if (m_autoSelected == middleAutoPidBlue) {
-      PIDDriveStraight.execute(startTime, drivetrain, shooter, intake, 20, 0.1, 1., 145., 0.);
+      //String middleAutoSelected = middleNodeAutoChooser.getSelected();
+
+      PIDDriveStraight.execute(startTime, drivetrain, shooter, intake, 20, 0.1, 1., UNDEPLOYED_ANGLE, 0.);
       ScorePreNote.execute(shooter, intake, false, true, 2.75, 0.5);
-      
+      //if (middleAutoSelected == STOP_AFTER_1ST) return;
+
       // Spin up shooter and shoot
       //long SPIN_UP_TIME = 2000;
       //long startOfSpinningUpShooter = System.currentTimeMillis();
@@ -309,18 +333,23 @@ public class Robot extends TimedRobot {
       //ScorePreNote.execute(shooter, intake, false, true, 1.5);
 
       // Pick up 2nd note
-      MoveArm.execute(startTime, intake, shooter, -8, 1, 1);
-      PIDDriveStraight.execute(startTime, drivetrain, shooter, intake, 100, 0.15, 1., -20., 1.);
+      //intake.runOpenLoopIntake();
+      //MoveArm.execute(startTime, intake, shooter, -1, 1, 1);
+
+      PIDDriveStraight.execute(startTime, drivetrain, shooter, intake, 100, 0.12, 1., -23., 0.9);
 
       // Shoot 2nd note
       //MoveArm.execute(startTime, intake, shooter, 90, 1., 0.);
-      PIDDriveStraight.execute(startTime, drivetrain, shooter, intake, -90, 0.7, 1., 145, 0.);
+      PIDDriveStraight.execute(startTime, drivetrain, shooter, intake, -80, 0.7, 1., UNDEPLOYED_ANGLE, 0.);
       ScorePreNote.execute(shooter, intake, false, true, 0.1, 0.5);
+
+      //if (middleAutoSelected == STOP_AFTER_2ND) return;
 
       // Pick up 3rd note
       PIDTurn.execute(startTime, drivetrain, shooter, intake, 53, 0.4, 1., 10.);
-      PIDDriveStraight.execute(startTime, drivetrain, shooter, intake, 160, 0.15, 1., -15., 1.);
-      PIDDriveStraight.execute(startTime, drivetrain, shooter, intake, -115, 0.9, 1., 145, 0.);
+      PIDDriveStraight.execute(startTime, drivetrain, shooter, intake, 160, 0.15, 1., -15., 0.9);
+      PIDDriveStraight.execute(startTime, drivetrain, shooter, intake, -125, 0.9, 1., UNDEPLOYED_ANGLE, 0.);
+      PIDTurn.execute(startTime, drivetrain, shooter, intake, -25, 0.4, 1., UNDEPLOYED_ANGLE);
 
       // Score 3rd note
       ScorePreNote.execute(shooter, intake, false, true, 0.1, 0.5);
@@ -334,7 +363,7 @@ public class Robot extends TimedRobot {
     // In case we exit autonomousInit early
     drivetrain.arcadeDrive(0, 0);
     intake.runOpenLoopIntake(0);
-    intake.controllerOpenLoopArticulation(0);
+    //intake.controllerOpenLoopArticulation(0);
     shooter.runOpenLoopFront(0);
     shooter.runOpenLoopBack(0);
   }
@@ -371,7 +400,7 @@ public class Robot extends TimedRobot {
     } else if (oi.getArticulatedIntakeOpenLoopButton()) {
       intake.controllerOpenLoopArticulation(oi.getArticulatedIntakeOpenLoopAxis() * 0.2);
     } else {
-      intake.controllerClosedLoopArticulation(145); //play with these 
+      intake.controllerClosedLoopArticulation(UNDEPLOYED_ANGLE); //play with these 
     }
 
 
@@ -435,7 +464,7 @@ public class Robot extends TimedRobot {
       //drivetrain.resetEncoders();
       //drivetrain.resetGyro();
       //PIDTurn.execute(System.currentTimeMillis(), drivetrain, shooter, intake, -40, 0.5, 0, 145);
-      PIDDriveStraight.execute(System.currentTimeMillis(), drivetrain, shooter, intake, -300, 0.3, 0, 145., 0);
+      //PIDDriveStraight.execute(System.currentTimeMillis(), drivetrain, shooter, intake, -300, 0.3, 0, 145., 0);
     }
   }
   

@@ -13,6 +13,7 @@ public class ArticulatedIntake {
     private final double ACCEPTABLE_RANGE = 15;
     private final double kFGravity = 0.082188;
     private final double kP = 0.0019;
+    //private final double kP = 0.0038;
 
     public ArticulatedIntake(IArticulatedIntakeHardware intake){
         this.intake = intake;
@@ -45,7 +46,7 @@ public class ArticulatedIntake {
         } else {
             // Run proportional controller + feed forward value
             double output = (error * kP) + feedForwardVal;
-            output = capArticulationInput(output, 0.6, -0.6);
+            output = capArticulationInput(output, 0.8, -0.8);
             intake.setArmMotorPower(output);
         }
     }

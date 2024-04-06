@@ -19,7 +19,7 @@ public class PIDTurn extends AutonAction {
 
         while (inRangeCount < IN_RANGE_COUNT_REQ && isInAutoTime(autonStartTime)) {
             turnPidController.updateError(drivetrain.getAngle());
-            System.out.println("PID Output: " + turnPidController.getOutput());
+            //System.out.println("PID Output: " + turnPidController.getOutput());
             drivetrain.arcadeDrive(0, turnPidController.getOutput());
 
             shooter.runOpenLoopFront(shooterSpeed);

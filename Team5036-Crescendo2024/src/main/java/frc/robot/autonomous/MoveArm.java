@@ -1,5 +1,6 @@
 package frc.robot.autonomous;
 
+import edu.wpi.first.wpilibj.Timer;
 import frc.robot.subsystems.ArticulatedIntake;
 import frc.robot.subsystems.Shooter;
 
@@ -22,6 +23,8 @@ public class MoveArm extends AutonAction {
             if (Math.abs(intake.getCurrentAngle() - desiredAngle) < ACCEPTABLE_RANGE) {
                 inRangeCount += 1;
             }
+
+            Timer.delay(0.02);
         }
     }
 }

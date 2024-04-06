@@ -24,8 +24,8 @@ public class PIDDriveStraight extends AutonAction {
             driveStraightController.updateError(drivetrain.getDistTravelled());
             turnPidController.updateError(drivetrain.getAngle());
             
-            System.out.println("Target: " + desiredDist + ", Current sensor reading: " + drivetrain.getDistTravelled());
-            System.out.println("PID Drive straight Output: " + driveStraightController.getOutput());
+            //System.out.println("Target: " + desiredDist + ", Current sensor reading: " + drivetrain.getDistTravelled());
+            //System.out.println("PID Drive straight Output: " + driveStraightController.getOutput());
             drivetrain.arcadeDrive(-driveStraightController.getOutput(), turnPidController.getOutput());
 
             shooter.runOpenLoopFront(shooterSpeed);

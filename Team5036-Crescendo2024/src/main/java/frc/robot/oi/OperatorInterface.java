@@ -6,13 +6,13 @@ public class OperatorInterface implements IOperatorInterface {
     private Joystick drivetrainController;
     private Joystick operatorController;
 
-    private Joystick tuningController;
+    //private Joystick tuningController;
 
     public OperatorInterface() {
         drivetrainController = new Joystick(0);
         operatorController = new Joystick(1);
         
-        tuningController = new Joystick(2);
+        //tuningController = new Joystick(2);
     }
 
     @Override
@@ -70,11 +70,11 @@ public class OperatorInterface implements IOperatorInterface {
 
     @Override
     public double getArticulatedIntakePIDTuningAxis(){
-        double a = 0.175;
-        double b = 0.21;
-        return ((-tuningController.getRawAxis(1) + 1) / 2) * (b - a) + a;
+        //double a = 0.175;
+        //double b = 0.21;
+        //return ((-tuningController.getRawAxis(1) + 1) / 2) * (b - a) + a;
         // Only reimplement if we need to tune something again.
-        //return 0;
+        return 0;
     }
 
     @Override 
@@ -89,7 +89,8 @@ public class OperatorInterface implements IOperatorInterface {
 
     @Override
     public boolean getDebugButton() {
-        return tuningController.getRawButton(3);
+        //return tuningController.getRawButton(3);
+        return false;
     }
 
     @Override
